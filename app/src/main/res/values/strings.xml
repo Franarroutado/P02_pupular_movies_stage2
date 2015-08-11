@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">PopularMovies</string>
+    <!--<string name="hello_world">Hello world!</string>-->
+    <string name="action_settings">Settings</string>
+
+    <!-- Default sort options -->
+    <string name="sortByPopularity_key">popularity.desc</string>
+    <string name="sortByRank_key">vote_average.desc</string>
+    <string name="title_activity_popular_movies_detail">PopularMoviesDetailActivity</string>
+    <string name="hello_world">Hello world!</string>
+
+    <string name="moviedb_image_url">http://image.tmdb.org/t/p/w185</string>
+</resources>
