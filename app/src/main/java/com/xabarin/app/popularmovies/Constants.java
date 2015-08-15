@@ -10,7 +10,7 @@ public final class Constants {
     // Final Fields
     // ===========================================================
 
-    // This key is used for store and retrieve data between activities.
+    // This key is used for store and retrieve EXTRA data between activities.
     public static final String EXTRA_MOVIE_DETAIL_KEY = "movieDetail";
 
     // ===========================================================

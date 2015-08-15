@@ -1,4 +1,4 @@
-package com.xabarin.app.popularmovies.adapter;
+package com.xabarin.app.popularmovies.ui.adapter;
 
 import android.content.Context;
 import android.util.Log;

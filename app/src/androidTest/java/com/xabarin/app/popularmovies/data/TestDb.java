@@ -42,7 +42,7 @@ public class TestDb extends AndroidTestCase {
 
     // Since we want each deleteMe to start with a clean slate
     void deleteTheDatabase() {
-        mContext.deleteDatabase(MovieDBHelper.DATABASE_NAME);
+        mContext.deleteDatabase(PopularMoviesDBHelper.DATABASE_NAME);
     }
 
     /*
@@ -59,7 +59,7 @@ public class TestDb extends AndroidTestCase {
         tableNameHashSet.add(MovieEntry.TABLE_NAME);
 
         deleteTheDatabase();
-        SQLiteDatabase db = new MovieDBHelper(mContext).getWritableDatabase();
+        SQLiteDatabase db = new PopularMoviesDBHelper(mContext).getWritableDatabase();
 
         // Validate the DB is open
         assertEquals(true, db.isOpen());

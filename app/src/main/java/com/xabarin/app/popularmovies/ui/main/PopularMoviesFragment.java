@@ -11,7 +11,7 @@ import android.widget.GridView;
 
 import com.xabarin.app.popularmovies.Constants;
 import com.xabarin.app.popularmovies.R;
-import com.xabarin.app.popularmovies.adapter.ImageAdapter;
+import com.xabarin.app.popularmovies.ui.adapter.ImageAdapter;
 import com.xabarin.app.popularmovies.model.movies.Movie;
 import com.xabarin.app.popularmovies.model.movies.MoviesCollection;
 import com.xabarin.app.popularmovies.ui.BaseFragment;

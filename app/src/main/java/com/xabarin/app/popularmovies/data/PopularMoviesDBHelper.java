@@ -10,7 +10,7 @@ import com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
 /**
  * Created by francisco on 10/08/15.
  */
-public class MovieDBHelper extends SQLiteOpenHelper {
+public class PopularMoviesDBHelper extends SQLiteOpenHelper {
 
     // Ordering code based on github contributor https://github.com/sockeqwe
     // ===========================================================
@@ -35,7 +35,7 @@ public class MovieDBHelper extends SQLiteOpenHelper {
     // Constructors
     // ===========================================================
 
-    public MovieDBHelper(Context context) {
+    public PopularMoviesDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -58,6 +58,7 @@ public class MovieDBHelper extends SQLiteOpenHelper {
                         MovieEntry.COLUMN_OVERVIEW + SQL_TEXT_NOT_NULL + COMMA +
                         MovieEntry.COLUMN_POSTER_URL + SQL_TEXT_NOT_NULL + COMMA +
                         MovieEntry.COLUMN_RELEASE_DATE + SQL_INTEGER_NOT_NULL + COMMA +
+                        MovieEntry.COLUMN_POPULARITY + SQL_INTEGER_NOT_NULL + COMMA +
                         MovieEntry.COLUMN_VOTE_AVERAGE + SQL_INTEGER_NOT_NULL + ");";
 
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);

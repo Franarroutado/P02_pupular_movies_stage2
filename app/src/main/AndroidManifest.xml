@@ -9,6 +9,10 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <provider
+            android:authorities="com.xabarin.app.popularmovies"
+            android:name=".data.PopularMoviesProvider" >
+        </provider>
         <activity
             android:name=".ui.main.PopularMoviesActivity"
             android:label="@string/app_name" >
