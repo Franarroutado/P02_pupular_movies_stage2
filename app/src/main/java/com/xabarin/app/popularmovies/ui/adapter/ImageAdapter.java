@@ -1,11 +1,11 @@
 package com.xabarin.app.popularmovies.ui.adapter;
 
 import android.content.Context;
-import android.util.Log;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 /**
  * Created by francisco on 9/08/15.
  */
-public class ImageAdapter extends BaseAdapter {
+public class ImageAdapter extends CursorAdapter {
 
     // Ordering code based on github contributor https://github.com/sockeqwe
     // ===========================================================
@@ -39,9 +39,9 @@ public class ImageAdapter extends BaseAdapter {
     // Constructors
     // ===========================================================
 
-    public ImageAdapter(Context context, ArrayList<Movie> myMovies) {
+    public ImageAdapter(Context context, Cursor cursor, int flags) {
+        super(context, cursor, flags);
         mContext = context;
-        mArrLstMovies = myMovies;
     }
 
     // ===========================================================
@@ -52,57 +52,31 @@ public class ImageAdapter extends BaseAdapter {
     // Methods from SuperClass/Interfaces
     // ===========================================================
 
+    /*
+        Remember that these views are reused as needed.
+     */
     @Override
-    public int getCount() {
-        return mArrLstMovies.size();
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        View view = LayoutInflater.from(context).inflate(R.layout.grid_image_item_movies, parent, false);
+
+        return view;
     }
 
+    /*
+        This is where we fill-in the views with the contents of the cursor.
+     */
     @Override
-    public void notifyDataSetChanged() {
-        super.notifyDataSetChanged();
+    public void bindView(View view, Context context, Cursor cursor) {
+
+        Picasso.with(mContext)
+                .load(BASE_IMAGE_URL + cursor.getString(2))
+                .into((ImageView) view);
+
     }
 
     // ===========================================================
     // Methods
     // ===========================================================
-
-    public Movie getItem(int position) {
-        return mArrLstMovies.get(position);
-    }
-
-    public long getItemId(int position) {
-        return 0;
-    }
-
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-        if ( null == convertView ) {
-            Log.v(LOG_TAG, "-------- Create a new View --------");
-            LayoutInflater inflater =
-                    (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.grid_image_item_movies, parent, false);
-        }
-
-        Picasso.with(mContext)
-                .load(BASE_IMAGE_URL + getItem(position).getPoster_path())
-                .into((ImageView) convertView);
-
-        return convertView;
-    }
-
-    public void clear() {
-        if (mArrLstMovies != null) {
-            mArrLstMovies.clear();
-            notifyDataSetChanged();
-        }
-    }
-
-    public void add(Movie movie) {
-        if (mArrLstMovies != null) {
-            mArrLstMovies.add(movie);
-            notifyDataSetChanged();
-        }
-    }
 
     // ===========================================================
     // Inner and Anonymous Classes

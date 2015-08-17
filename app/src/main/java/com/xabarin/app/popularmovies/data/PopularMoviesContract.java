@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.text.format.Time;
 
 /**
  * Created by francisco on 10/08/15.
@@ -55,13 +54,13 @@ public class PopularMoviesContract {
 
     // To make it easy to query for the exact date, we normalize all dates that go into
     // the database to the start of the the Julian day at UTC.
-    public static long normalizeDate(long startDate) {
-        // normalize the start date to the beginning of the (UTC) day
-        Time time = new Time();
-        time.set(startDate);
-        int julianDay = Time.getJulianDay(startDate, time.gmtoff);
-        return time.setJulianDay(julianDay);
-    }
+//    public static long normalizeDate(long startDate) {
+//        // normalize the start date to the beginning of the (UTC) day
+//        Time time = new Time();
+//        time.set(startDate);
+//        int julianDay = Time.getJulianDay(startDate, time.gmtoff);
+//        return time.setJulianDay(julianDay);
+//    }
 
     // ===========================================================
     // Inner and Anonymous Classes
@@ -95,6 +94,27 @@ public class PopularMoviesContract {
         public static final String COLUMN_POPULARITY   =   "popularity";
         public static final String COLUMN_VOTE_AVERAGE =   "vote_average";
         public static final String COLUMN_RELEASE_DATE =   "release_date";
+
+        // This is the order for the queries function
+        public static final String[] MOVIES_COLUMNS = {
+                _ID,
+                COLUMN_TITLE,
+                COLUMN_POSTER_URL,
+                COLUMN_OVERVIEW,
+                COLUMN_RELEASE_DATE,
+                COLUMN_POPULARITY,
+                COLUMN_VOTE_AVERAGE
+        };
+
+        // These indices are tied to MOVIES_COLUMNS.  If MOVIES_COLUMNS changes, these
+        // must change.
+        public static final int CURSOR_COLUMN_INDEX_FOR_ID = 0;
+        public static final int CURSOR_COLUMN_INDEX_FOR_TITLE = 1;
+        public static final int CURSOR_COLUMN_INDEX_FOR_OVERVIEW = 2;
+        public static final int CURSOR_COLUMN_INDEX_FOR_POSTER_URL = 3;
+        public static final int CURSOR_COLUMN_INDEX_FOR_RELEASE_DATE = 4;
+        public static final int CURSOR_COLUMN_INDEX_FOR_POPULARITY = 5;
+        public static final int CURSOR_COLUMN_INDEX_FOR_VOTE_AVERAGE = 6;
 
         // ===========================================================
         // Fields

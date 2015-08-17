@@ -53,13 +53,13 @@ public class PopularMoviesDBHelper extends SQLiteOpenHelper {
         final String COMMA = ",";
         final String SQL_CREATE_MOVIE_TABLE =
                 SQL_CREATE_TABLE + MovieEntry.TABLE_NAME + " (" +
-                        MovieEntry._ID + SQL_INTEGER_PK_AUTOINCREMENT + COMMA +
-                        MovieEntry.COLUMN_TITLE + SQL_TEXT_NOT_NULL + COMMA +
-                        MovieEntry.COLUMN_OVERVIEW + SQL_TEXT_NOT_NULL + COMMA +
-                        MovieEntry.COLUMN_POSTER_URL + SQL_TEXT_NOT_NULL + COMMA +
-                        MovieEntry.COLUMN_RELEASE_DATE + SQL_INTEGER_NOT_NULL + COMMA +
-                        MovieEntry.COLUMN_POPULARITY + SQL_INTEGER_NOT_NULL + COMMA +
-                        MovieEntry.COLUMN_VOTE_AVERAGE + SQL_INTEGER_NOT_NULL + ");";
+                        MovieEntry._ID                      + SQL_INTEGER_PK_AUTOINCREMENT + COMMA +
+                        MovieEntry.COLUMN_TITLE             + SQL_TEXT_NOT_NULL + COMMA +
+                        MovieEntry.COLUMN_OVERVIEW          + SQL_TEXT_NOT_NULL + COMMA +
+                        MovieEntry.COLUMN_POSTER_URL        + SQL_TEXT_NOT_NULL + COMMA +
+                        MovieEntry.COLUMN_RELEASE_DATE      + SQL_TEXT_NOT_NULL + COMMA +
+                        MovieEntry.COLUMN_POPULARITY        + SQL_TEXT_NOT_NULL + COMMA +
+                        MovieEntry.COLUMN_VOTE_AVERAGE      + SQL_TEXT_NOT_NULL + ");";
 
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
     }

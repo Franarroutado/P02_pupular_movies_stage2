@@ -51,6 +51,10 @@ public class PopularMoviesPreferences {
                 mContext.getString(R.string.pref_apikey_default));
     }
 
+    public String getSortByPopularity() {
+        return mPreferences.getString(mContext.getString(R.string.sortByPopularity_key), null);
+    }
+
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================

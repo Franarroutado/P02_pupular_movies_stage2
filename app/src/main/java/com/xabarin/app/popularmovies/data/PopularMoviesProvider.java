@@ -7,6 +7,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 
 import static com.xabarin.app.popularmovies.data.PopularMoviesContract.CONTENT_AUTHORITY;
 import static com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
@@ -21,6 +22,8 @@ public class PopularMoviesProvider extends ContentProvider {
     // ===========================================================
     // Final Fields
     // ===========================================================
+
+    private static final String LOG_TAG = PopularMoviesProvider.class.getSimpleName();
 
     // The URI Matcher used by this content provider.
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -112,7 +115,7 @@ public class PopularMoviesProvider extends ContentProvider {
 
         switch (match){
             case POPULAR_MOVIES: {
-                normalizeDate(values);
+                // normalizeDate(values);
                 long _id = db.insert(MovieEntry.TABLE_NAME, null, values);
                 if (_id > 0) {
                     returnUri = MovieEntry.buildMoviesUri(_id);
@@ -215,13 +218,13 @@ public class PopularMoviesProvider extends ContentProvider {
         return sURIMatcher;
     }
 
-    private void normalizeDate(ContentValues values) {
-        // normalize the date value
-        if (values.containsKey(MovieEntry.COLUMN_RELEASE_DATE)) {
-            long dateValue = values.getAsLong(MovieEntry.COLUMN_RELEASE_DATE);
-            values.put(MovieEntry.COLUMN_RELEASE_DATE, PopularMoviesContract.normalizeDate(dateValue));
-        }
-    }
+//    private void normalizeDate(ContentValues values) {
+//        // normalize the date value
+//        if (values.containsKey(MovieEntry.COLUMN_RELEASE_DATE)) {
+//            long dateValue = values.getAsLong(MovieEntry.COLUMN_RELEASE_DATE);
+//            values.put(MovieEntry.COLUMN_RELEASE_DATE, PopularMoviesContract.normalizeDate(dateValue));
+//        }
+//    }
 
     private Cursor getPopularMovies(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         return mMoviesDBHelper.getReadableDatabase().query(
@@ -234,6 +237,33 @@ public class PopularMoviesProvider extends ContentProvider {
                 sortOrder);
     }
 
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        final SQLiteDatabase db = mMoviesDBHelper.getWritableDatabase();
+
+        switch (sUriMatcher.match(uri)) {
+            case POPULAR_MOVIES:
+                db.beginTransaction();
+                int returnCount = 0;
+                try {
+                    for (ContentValues value : values) {
+                        // normalizeDate(value);
+                        long _id = db.insert(MovieEntry.TABLE_NAME, null, value);
+                        Log.v(LOG_TAG, "New row inserted" + _id);
+                        Log.v(LOG_TAG, value.toString());
+                        if (_id != -1) returnCount++;
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                    db.close();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            default:
+                return super.bulkInsert(uri, values);
+        }
+    }
 
     // ===========================================================
     // Inner and Anonymous Classes
