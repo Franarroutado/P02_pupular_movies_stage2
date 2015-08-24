@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.xabarin.app.popularmovies.R;
+import com.xabarin.app.popularmovies.preferences.PopularMoviesPreferences;
 import com.xabarin.app.popularmovies.ui.BaseActivity;
 import com.xabarin.app.popularmovies.ui.SettingsActivity;
 
@@ -22,6 +23,11 @@ public class PopularMoviesActivity extends BaseActivity {
     // Fields
     // ===========================================================
 
+    /**
+     * Set the 3 sort options: by most popular, by highest-rated or favourite
+     */
+    private String mSortOption;
+
     // ===========================================================
     // Constructors
     // ===========================================================
@@ -37,9 +43,27 @@ public class PopularMoviesActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (null == savedInstanceState) {
-            attachPopularMoviesFragment();
+//        if (null == savedInstanceState) {
+//            attachPopularMoviesFragment();
+//        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        PopularMoviesPreferences preferences = new PopularMoviesPreferences(getApplicationContext());
+        String sortOption =  preferences.getDefaultSortBy();
+
+        // update the location in our second pane using the fragment manager
+        if (sortOption != null && !sortOption.equals(mSortOption)) {
+            PopularMoviesFragment pmf = (PopularMoviesFragment) getFragmentManager().findFragmentById(R.id.activity_fragment_container);
+            if (null != pmf) {
+                pmf.onSortByChanged();
+            }
         }
+
+        mSortOption = sortOption;
     }
 
     @Override

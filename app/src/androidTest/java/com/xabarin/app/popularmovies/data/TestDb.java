@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
 import com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
+import com.xabarin.app.popularmovies.data.PopularMoviesContract.FavMovieEntry;
 
 import java.util.HashSet;
 
@@ -51,12 +52,14 @@ public class TestDb extends AndroidTestCase {
     */
     public void setUp() {
         deleteTheDatabase();
+        createDb();
     }
 
-    public void testCreateDb() throws Throwable {
+    public void createDb() {
 
         final HashSet<String> tableNameHashSet = new HashSet<String>();
         tableNameHashSet.add(MovieEntry.TABLE_NAME);
+        tableNameHashSet.add(FavMovieEntry.TABLE_NAME);
 
         deleteTheDatabase();
         SQLiteDatabase db = new PopularMoviesDBHelper(mContext).getWritableDatabase();
@@ -78,9 +81,16 @@ public class TestDb extends AndroidTestCase {
         assertTrue("ERROR: The database without movie table.",
                 tableNameHashSet.isEmpty());
 
+        //
+        //
+        //  TESTING For movie TABLE
+        //
+
+
         // now,do the tables contains the correct columns?
         c = db.rawQuery("PRAGMA table_info(" + MovieEntry.TABLE_NAME + ")",
                 null);
+
 
         assertTrue("Error: This means that we were unable to query the database for table information.",
                 c.moveToFirst());
@@ -99,6 +109,77 @@ public class TestDb extends AndroidTestCase {
             String columnName = c.getString(columnNameIndex);
             locationColumnHashSet.remove(columnName);
         } while(c.moveToNext());
+
+
+        // if this fails, it means that your database doesn't contain all of the required location
+        // entry columns
+        assertTrue("Error: The database doesn't contain all of the required location entry columns",
+                locationColumnHashSet.isEmpty());
+        db.close();
+    }
+
+    public void testMovieTableExists() {
+        SQLiteDatabase db = new PopularMoviesDBHelper(mContext).getReadableDatabase();
+
+
+        // now,do the tables contains the correct columns?
+        Cursor c = db.rawQuery("PRAGMA table_info(" + MovieEntry.TABLE_NAME + ")",
+                null);
+
+
+        assertTrue("Error: This means that we were unable to query the database for table information.",
+                c.moveToFirst());
+
+        // Build a HashSet of all of the column names we want to look for
+        final HashSet<String> locationColumnHashSet = new HashSet<String>();
+        locationColumnHashSet.add(MovieEntry._ID);
+        locationColumnHashSet.add(MovieEntry.COLUMN_TITLE);
+        locationColumnHashSet.add(MovieEntry.COLUMN_OVERVIEW);
+        locationColumnHashSet.add(MovieEntry.COLUMN_POSTER_URL);
+        locationColumnHashSet.add(MovieEntry.COLUMN_RELEASE_DATE);
+        locationColumnHashSet.add(MovieEntry.COLUMN_VOTE_AVERAGE);
+
+        int columnNameIndex = c.getColumnIndex("name");
+        do {
+            String columnName = c.getString(columnNameIndex);
+            locationColumnHashSet.remove(columnName);
+        } while(c.moveToNext());
+
+
+        // if this fails, it means that your database doesn't contain all of the required location
+        // entry columns
+        assertTrue("Error: The database doesn't contain all of the required location entry columns",
+                locationColumnHashSet.isEmpty());
+        db.close();
+    }
+
+    public void testFavMovieTableExists() {
+        SQLiteDatabase db = new PopularMoviesDBHelper(mContext).getReadableDatabase();
+
+
+        // now,do the tables contains the correct columns?
+        Cursor c = db.rawQuery("PRAGMA table_info(" + FavMovieEntry.TABLE_NAME + ")",
+                null);
+
+
+        assertTrue("Error: This means that we were unable to query the database for table information.",
+                c.moveToFirst());
+
+        // Build a HashSet of all of the column names we want to look for
+        final HashSet<String> locationColumnHashSet = new HashSet<String>();
+        locationColumnHashSet.add(MovieEntry._ID);
+        locationColumnHashSet.add(MovieEntry.COLUMN_TITLE);
+        locationColumnHashSet.add(MovieEntry.COLUMN_OVERVIEW);
+        locationColumnHashSet.add(MovieEntry.COLUMN_POSTER_URL);
+        locationColumnHashSet.add(MovieEntry.COLUMN_RELEASE_DATE);
+        locationColumnHashSet.add(MovieEntry.COLUMN_VOTE_AVERAGE);
+
+        int columnNameIndex = c.getColumnIndex("name");
+        do {
+            String columnName = c.getString(columnNameIndex);
+            locationColumnHashSet.remove(columnName);
+        } while(c.moveToNext());
+
 
         // if this fails, it means that your database doesn't contain all of the required location
         // entry columns

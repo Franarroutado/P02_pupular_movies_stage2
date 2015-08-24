@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.util.Log;
 
 import com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
+import com.xabarin.app.popularmovies.data.PopularMoviesDB;
 import com.xabarin.app.popularmovies.model.MoviesAPI;
 import com.xabarin.app.popularmovies.model.movies.Movie;
 import com.xabarin.app.popularmovies.model.movies.MoviesCollection;
@@ -65,6 +66,7 @@ public class PopularMoviesPresenter {
         myMoviesAPI.getMoviesByHighestRated(new Callback<MoviesCollection>() {
             @Override
             public void success(MoviesCollection moviesCollection, Response response) {
+                Log.v(LOG_TAG, "Sucessfully fetching movies. ");
                 insertPopularMovies(moviesCollection);
                 mView.onRequestMoviesSuccess(moviesCollection);
             }
@@ -85,7 +87,10 @@ public class PopularMoviesPresenter {
 
     private void insertPopularMovies(MoviesCollection moviesCollection) {
 
-        // Insert the new weather information into the database
+        // Anytime a collection of movies are populated into the database it is neccesary to clear DB
+        PopularMoviesDB.deleteAllMovies(mView.getViewActivity());
+
+        // Insert the new movies data into the database
         Vector<ContentValues> cVector = new Vector<ContentValues>(moviesCollection.getResults().size());
 
         int numInsertedRows = 0;
@@ -93,10 +98,10 @@ public class PopularMoviesPresenter {
         for (Movie movie : moviesCollection.getResults())
         {
             ContentValues popularMoviesValues = new ContentValues();
+            popularMoviesValues.put(MovieEntry.COLUMN_ID, movie.getId());
             popularMoviesValues.put(MovieEntry.COLUMN_VOTE_AVERAGE, normalizeValue(movie.getVote_average()));
             popularMoviesValues.put(MovieEntry.COLUMN_TITLE, normalizeValue(movie.getTitle()));
             popularMoviesValues.put(MovieEntry.COLUMN_POSTER_URL, normalizeValue(movie.getPoster_path()));
-            popularMoviesValues.put(MovieEntry.COLUMN_POPULARITY, normalizeValue(movie.getPopularity()));
             popularMoviesValues.put(MovieEntry.COLUMN_OVERVIEW, normalizeValue(movie.getOverview()));
             popularMoviesValues.put(MovieEntry.COLUMN_RELEASE_DATE, normalizeValue(movie.getRelease_date()));
 
@@ -107,7 +112,10 @@ public class PopularMoviesPresenter {
         if ( cVector.size() > 0) {
             ContentValues [] cvArray = new ContentValues[cVector.size()];
             cVector.toArray(cvArray);
-            numInsertedRows = mView.getViewActivity().getContentResolver().bulkInsert(MovieEntry.CONTENT_URI, cvArray);
+
+            PopularMoviesDB.addMovieCollection(mView.getViewActivity(), cvArray);
+
+            // numInsertedRows = mView.getViewActivity().getContentResolver().bulkInsert(FavMovieEntry.CONTENT_URI, cvArray);
 
             if (numInsertedRows == 0) {
                 Log.v(LOG_TAG, "Error bulk insert");

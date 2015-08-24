@@ -30,7 +30,8 @@ public class PopularMoviesContract {
     // looking at weather data. content://com.example.android.sunshine.app/givemeroot/ will fail,
     // as the ContentProvider hasn't been given any information on what to do with "givemeroot".
     // At least, let's hope not.  Don't be that dev, reader.  Don't be that dev.
-    public static final String PATH_MOVIE = "movie";
+    public static final String PATH_MOVIE = MovieEntry.TABLE_NAME;
+    public static final String PATH_FAV_MOVIE = FavMovieEntry.TABLE_NAME;
 
     // ===========================================================
     // Fields
@@ -65,33 +66,26 @@ public class PopularMoviesContract {
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================
-
-    public static final class MovieEntry implements BaseColumns {
-
-        // Ordering code based on github contributor https://github.com/sockeqwe
-        // ===========================================================
-        // Final Fields
-        // ===========================================================
+    public static final class MovieEntry  implements BaseColumns {
 
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIE).build();
 
-
         // Thist two constants stores the MIME type used by getType function in the custom Content
         // provider to identify the type of content this provider replies.
         public static final String CONTENT_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAV_MOVIE;
         public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAV_MOVIE;
 
         // SQLite table name
         public static final String TABLE_NAME =            "movie";
 
         // SQLite columns name
+        public static final String COLUMN_ID =             _ID;
         public static final String COLUMN_TITLE =          "title";
         public static final String COLUMN_POSTER_URL =     "poster";
         public static final String COLUMN_OVERVIEW =       "overview";
-        public static final String COLUMN_POPULARITY   =   "popularity";
         public static final String COLUMN_VOTE_AVERAGE =   "vote_average";
         public static final String COLUMN_RELEASE_DATE =   "release_date";
 
@@ -101,20 +95,76 @@ public class PopularMoviesContract {
                 COLUMN_TITLE,
                 COLUMN_POSTER_URL,
                 COLUMN_OVERVIEW,
-                COLUMN_RELEASE_DATE,
-                COLUMN_POPULARITY,
-                COLUMN_VOTE_AVERAGE
+                COLUMN_VOTE_AVERAGE,
+                COLUMN_RELEASE_DATE
         };
 
         // These indices are tied to MOVIES_COLUMNS.  If MOVIES_COLUMNS changes, these
         // must change.
-        public static final int CURSOR_COLUMN_INDEX_FOR_ID = 0;
-        public static final int CURSOR_COLUMN_INDEX_FOR_TITLE = 1;
-        public static final int CURSOR_COLUMN_INDEX_FOR_OVERVIEW = 2;
-        public static final int CURSOR_COLUMN_INDEX_FOR_POSTER_URL = 3;
-        public static final int CURSOR_COLUMN_INDEX_FOR_RELEASE_DATE = 4;
-        public static final int CURSOR_COLUMN_INDEX_FOR_POPULARITY = 5;
-        public static final int CURSOR_COLUMN_INDEX_FOR_VOTE_AVERAGE = 6;
+        public static final int CURSOR_COLUMN_INDEX_FOR_ID =            0;
+        public static final int CURSOR_COLUMN_INDEX_FOR_TITLE =         1;
+        public static final int CURSOR_COLUMN_INDEX_FOR_POSTER_URL =    2;
+        public static final int CURSOR_COLUMN_INDEX_FOR_OVERVIEW =      3;
+        public static final int CURSOR_COLUMN_INDEX_FOR_VOTE_AVERAGE =  4;
+        public static final int CURSOR_COLUMN_INDEX_FOR_RELEASE_DATE =  5;
+
+        /**
+         *  Return the Uri used by the ContentProvider "insert" method
+         * @param id
+         * @return Uri
+         */
+        public static Uri buildMoviesUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+    }
+
+
+    public static final class FavMovieEntry implements BaseColumns {
+
+        // Ordering code based on github contributor https://github.com/sockeqwe
+        // ===========================================================
+        // Final Fields
+        // ===========================================================
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAV_MOVIE).build();
+
+
+        // Thist two constants stores the MIME type used by getType function in the custom Content
+        // provider to identify the type of content this provider replies.
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAV_MOVIE;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAV_MOVIE;
+
+        // SQLite table name
+        public static final String TABLE_NAME =            "fav_movie";
+
+        // SQLite columns name
+        public static final String COLUMN_TITLE =          "title";
+        public static final String COLUMN_POSTER_URL =     "poster";
+        public static final String COLUMN_OVERVIEW =       "overview";
+        public static final String COLUMN_VOTE_AVERAGE =   "vote_average";
+        public static final String COLUMN_RELEASE_DATE =   "release_date";
+
+        // This is the order for the queries function
+        public static final String[] MOVIES_COLUMNS = {
+                _ID,
+                COLUMN_TITLE,
+                COLUMN_POSTER_URL,
+                COLUMN_OVERVIEW,
+                COLUMN_VOTE_AVERAGE,
+                COLUMN_RELEASE_DATE
+        };
+
+        // These indices are tied to MOVIES_COLUMNS.  If MOVIES_COLUMNS changes, these
+        // must change.
+        public static final int CURSOR_COLUMN_INDEX_FOR_ID =            0;
+        public static final int CURSOR_COLUMN_INDEX_FOR_TITLE =         1;
+        public static final int CURSOR_COLUMN_INDEX_FOR_POSTER_URL =    2;
+        public static final int CURSOR_COLUMN_INDEX_FOR_OVERVIEW =      3;
+        public static final int CURSOR_COLUMN_INDEX_FOR_VOTE_AVERAGE =  4;
+        public static final int CURSOR_COLUMN_INDEX_FOR_RELEASE_DATE =  5;
 
         // ===========================================================
         // Fields

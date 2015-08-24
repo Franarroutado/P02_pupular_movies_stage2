@@ -8,6 +8,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
@@ -16,6 +19,7 @@ import com.xabarin.app.popularmovies.R;
 import com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
 import com.xabarin.app.popularmovies.model.movies.Movie;
 import com.xabarin.app.popularmovies.model.movies.MoviesCollection;
+import com.xabarin.app.popularmovies.preferences.PopularMoviesPreferences;
 import com.xabarin.app.popularmovies.ui.BaseFragment;
 import com.xabarin.app.popularmovies.ui.adapter.ImageAdapter;
 
@@ -63,6 +67,7 @@ public class PopularMoviesFragment extends BaseFragment
 
     public PopularMoviesFragment() {
         mPresenter = new PopularMoviesPresenter(this);
+        setHasOptionsMenu(true);
     }
 
     // ===========================================================
@@ -88,6 +93,15 @@ public class PopularMoviesFragment extends BaseFragment
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.popular_movies_fragment, menu);
+
+        // Retrieve the share menu item
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -98,14 +112,6 @@ public class PopularMoviesFragment extends BaseFragment
         mImageAdapter = new ImageAdapter(getActivity().getApplicationContext(), null, 0);
 
         mMoviesGrid.setAdapter(mImageAdapter);
-
-//        if ( null != savedInstanceState && savedInstanceState.containsKey(SAVED_INSTANCE_KEY)) {
-//            mCurrentMovies.clear();
-//            mCurrentMovies = savedInstanceState.getParcelableArrayList(SAVED_INSTANCE_KEY);
-//            buildView();
-//        } else {
-//            mPresenter.requestMovies(getString(R.string.sortByPopularity_key));
-//        }
 
         return view;
     }
@@ -146,8 +152,7 @@ public class PopularMoviesFragment extends BaseFragment
         return new CursorLoader(getActivity(),
                 popularMovieUri,
                 MovieEntry.MOVIES_COLUMNS,
-                null,null, MovieEntry.COLUMN_POPULARITY
-                );
+                null, null, null);
     }
 
     @Override
@@ -163,6 +168,12 @@ public class PopularMoviesFragment extends BaseFragment
     // ===========================================================
     // Methods
     // ===========================================================
+
+    public void onSortByChanged() {
+        PopularMoviesPreferences preferences =  new PopularMoviesPreferences(getActivity());
+        mPresenter.requestMovies(preferences.getDefaultSortBy());
+        getLoaderManager().restartLoader(POPULARMOVIES_LOADER, null, this);
+    }
 
     public static PopularMoviesFragment makePopularMoviesFragment() {
         return new PopularMoviesFragment();

@@ -6,8 +6,14 @@
     <!-- Default sort options -->
     <string name="sortByPopularity_key">popularity.desc</string>
     <string name="sortByRank_key">vote_average.desc</string>
+    <string name="sortByFavourite_key">fav</string>
     <string name="title_activity_popular_movies_detail">PopularMoviesDetailActivity</string>
     <string name="hello_world">Hello world!</string>
 
+
+    <string name="action_share">Sort!</string>
+
     <string name="moviedb_image_url">http://image.tmdb.org/t/p/w185</string>
+
+
 </resources>

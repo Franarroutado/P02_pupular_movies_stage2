@@ -5,16 +5,17 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.util.Log;
+
+import com.xabarin.app.popularmovies.data.PopularMoviesContract.FavMovieEntry;
+import com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
 
 import static com.xabarin.app.popularmovies.data.PopularMoviesContract.CONTENT_AUTHORITY;
-import static com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
+import static com.xabarin.app.popularmovies.data.PopularMoviesContract.PATH_FAV_MOVIE;
 import static com.xabarin.app.popularmovies.data.PopularMoviesContract.PATH_MOVIE;
 
 /**
- * Created by francisco on 12/08/15.
+ * Created by francisco on 23/08/15.
  */
 public class PopularMoviesProvider extends ContentProvider {
 
@@ -24,22 +25,13 @@ public class PopularMoviesProvider extends ContentProvider {
     // ===========================================================
 
     private static final String LOG_TAG = PopularMoviesProvider.class.getSimpleName();
+    private PopularMoviesDBHelper mOpenHelper;
 
     // The URI Matcher used by this content provider.
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
     static final int POPULAR_MOVIES = 100;
-    static final int POPULAR_MOVIES_ID = 101;
-
-
-
-    // ORDER BY movie.popularity
-    private static final String mOrderByPopularity =
-            new StringBuilder()
-                    .append(" ORDER BY ")
-                    .append(MovieEntry.TABLE_NAME)
-                    .append(".")
-                    .append(MovieEntry.COLUMN_POPULARITY).toString();
+    static final int POPULAR_FAV_MOVIES = 200;
 
 
     // ===========================================================
@@ -68,15 +60,12 @@ public class PopularMoviesProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-
         // Use the Uri Matcher to determine what kind of URI this is.
-        final int match = sUriMatcher.match(uri);
-
-        switch (match) {
+        switch (sUriMatcher.match(uri)) {
             case POPULAR_MOVIES:
                 return MovieEntry.CONTENT_TYPE;
-            case POPULAR_MOVIES_ID:
-                return MovieEntry.CONTENT_ITEM_TYPE;
+            case POPULAR_FAV_MOVIES:
+                return FavMovieEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -86,17 +75,25 @@ public class PopularMoviesProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         Cursor myCursor;
-
         switch (sUriMatcher.match(uri)) {
             // "movie"
             case POPULAR_MOVIES: {
-                myCursor = getPopularMovies(projection, selection, selectionArgs, sortOrder);
+                myCursor = mMoviesDBHelper.getReadableDatabase().query(
+                        MovieEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null, null, sortOrder);
                 break;
             }
-            // "movie/#"
-            case POPULAR_MOVIES_ID: {
-                String strWhere = " _id=" + uri.getLastPathSegment();
-                myCursor = getPopularMovies(projection, strWhere, selectionArgs, sortOrder);
+            // "fav_movie"
+            case POPULAR_FAV_MOVIES: {
+                myCursor = mMoviesDBHelper.getReadableDatabase().query(
+                        FavMovieEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null, null, sortOrder);
                 break;
             }
             default:
@@ -109,16 +106,30 @@ public class PopularMoviesProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
 
-        final SQLiteDatabase db = mMoviesDBHelper.getWritableDatabase();
-        final int match = sUriMatcher.match(uri);
         Uri returnUri;
 
-        switch (match){
-            case POPULAR_MOVIES: {
-                // normalizeDate(values);
-                long _id = db.insert(MovieEntry.TABLE_NAME, null, values);
+        switch (sUriMatcher.match(uri)){
+            // "movie"
+            case POPULAR_MOVIES : {
+                long _id = mMoviesDBHelper.getWritableDatabase().insert(
+                        MovieEntry.TABLE_NAME,
+                        null,
+                        values);
                 if (_id > 0) {
-                    returnUri = MovieEntry.buildMoviesUri(_id);
+                    returnUri = PopularMoviesContract.FavMovieEntry.buildMoviesUri(_id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            }
+            // "fav_movie"
+            case POPULAR_FAV_MOVIES : {
+                long _id = mMoviesDBHelper.getWritableDatabase().insert(
+                        FavMovieEntry.TABLE_NAME,
+                        null,
+                        values);
+                if (_id > 0) {
+                    returnUri = PopularMoviesContract.FavMovieEntry.buildMoviesUri(_id);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
@@ -133,18 +144,31 @@ public class PopularMoviesProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        final SQLiteDatabase db = mMoviesDBHelper.getWritableDatabase(); // get the db
 
-        final int match = sUriMatcher.match(uri);
         int rowsDeleted;
 
         // this makes delete all rows return the number of rows deleted
         if ( null == selection ) selection = "1";
 
-        switch (match) {
-            case POPULAR_MOVIES:
-                rowsDeleted = db.update(MovieEntry.TABLE_NAME, values, selection, selectionArgs);
+        switch (sUriMatcher.match(uri)) {
+            // "movie"
+            case POPULAR_MOVIES : {
+                rowsDeleted = mMoviesDBHelper.getWritableDatabase().update(
+                        MovieEntry.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs);
                 break;
+            }
+            // "fav_movie"
+            case POPULAR_FAV_MOVIES : {
+                rowsDeleted = mMoviesDBHelper.getWritableDatabase().update(
+                        FavMovieEntry.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("The delete opertaion not supported: " + uri);
         }
@@ -163,18 +187,26 @@ public class PopularMoviesProvider extends ContentProvider {
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
 
-        final SQLiteDatabase db = mMoviesDBHelper.getWritableDatabase(); // get the db
-
-        final int match = sUriMatcher.match(uri);
         int rowsDeleted;
 
         // this makes delete all rows return the number of rows deleted
         if ( null == selection ) selection = "1";
 
-        switch (match) {
-            case POPULAR_MOVIES:
-                rowsDeleted = db.delete(MovieEntry.TABLE_NAME, selection, selectionArgs);
+        switch (sUriMatcher.match(uri)) {
+            case POPULAR_MOVIES: {
+                rowsDeleted = mMoviesDBHelper.getWritableDatabase().delete(
+                        MovieEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
                 break;
+            }
+            case POPULAR_FAV_MOVIES: {
+                rowsDeleted = mMoviesDBHelper.getWritableDatabase().delete(
+                        FavMovieEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("The delete opertaion not supported: " + uri);
         }
@@ -200,6 +232,7 @@ public class PopularMoviesProvider extends ContentProvider {
         super.shutdown();
     }
 
+
     // ===========================================================
     // Methods
     // ===========================================================
@@ -212,57 +245,10 @@ public class PopularMoviesProvider extends ContentProvider {
         // 2) Use the addURI function to match each of the types.  Use the constants from
         // PopularMoviesContract to help define the types to the UriMatcher.
         sURIMatcher.addURI(CONTENT_AUTHORITY, PATH_MOVIE, POPULAR_MOVIES);
-        sURIMatcher.addURI(CONTENT_AUTHORITY, PATH_MOVIE + "/#", POPULAR_MOVIES_ID);
+        sURIMatcher.addURI(CONTENT_AUTHORITY, PATH_FAV_MOVIE, POPULAR_FAV_MOVIES);
 
         // 3) Return the new matcher!
         return sURIMatcher;
-    }
-
-//    private void normalizeDate(ContentValues values) {
-//        // normalize the date value
-//        if (values.containsKey(MovieEntry.COLUMN_RELEASE_DATE)) {
-//            long dateValue = values.getAsLong(MovieEntry.COLUMN_RELEASE_DATE);
-//            values.put(MovieEntry.COLUMN_RELEASE_DATE, PopularMoviesContract.normalizeDate(dateValue));
-//        }
-//    }
-
-    private Cursor getPopularMovies(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        return mMoviesDBHelper.getReadableDatabase().query(
-                MovieEntry.TABLE_NAME,
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                sortOrder);
-    }
-
-    @Override
-    public int bulkInsert(Uri uri, ContentValues[] values) {
-        final SQLiteDatabase db = mMoviesDBHelper.getWritableDatabase();
-
-        switch (sUriMatcher.match(uri)) {
-            case POPULAR_MOVIES:
-                db.beginTransaction();
-                int returnCount = 0;
-                try {
-                    for (ContentValues value : values) {
-                        // normalizeDate(value);
-                        long _id = db.insert(MovieEntry.TABLE_NAME, null, value);
-                        Log.v(LOG_TAG, "New row inserted" + _id);
-                        Log.v(LOG_TAG, value.toString());
-                        if (_id != -1) returnCount++;
-                    }
-                    db.setTransactionSuccessful();
-                } finally {
-                    db.endTransaction();
-                    db.close();
-                }
-                getContext().getContentResolver().notifyChange(uri, null);
-                return returnCount;
-            default:
-                return super.bulkInsert(uri, values);
-        }
     }
 
     // ===========================================================

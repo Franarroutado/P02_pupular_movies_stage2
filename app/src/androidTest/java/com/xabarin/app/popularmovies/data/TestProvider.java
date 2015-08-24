@@ -5,9 +5,9 @@ import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
+import com.xabarin.app.popularmovies.data.PopularMoviesContract.FavMovieEntry;
 import com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
 
 /**
@@ -50,9 +50,20 @@ public class TestProvider extends AndroidTestCase {
        in the ContentProvider.
     */
     public void deleteAllRecordsFromProvider() {
+        mContext.getContentResolver().delete(FavMovieEntry.CONTENT_URI, null, null);
         mContext.getContentResolver().delete(MovieEntry.CONTENT_URI, null, null);
 
         Cursor cursor = mContext.getContentResolver().query(
+                FavMovieEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        assertEquals("Error: Records not deleted from fav_movie table during delete", 0, cursor.getCount());
+
+        cursor = mContext.getContentResolver().query(
                 MovieEntry.CONTENT_URI,
                 null,
                 null,
@@ -61,6 +72,7 @@ public class TestProvider extends AndroidTestCase {
         );
 
         assertEquals("Error: Records not deleted from movie table during delete", 0, cursor.getCount());
+
         cursor.close();
     }
 
@@ -101,14 +113,19 @@ public class TestProvider extends AndroidTestCase {
     }
 
     /*
-            This test doesn't touch the database.  It verifies that the ContentProvider returns
-            the correct type for each type of URI that it can handle.
-            Students: Uncomment this test to verify that your implementation of GetType is
-            functioning correctly.
-         */
+        This test doesn't touch the database.  It verifies that the ContentProvider returns
+        the correct type for each type of URI that it can handle.
+        Students: Uncomment this test to verify that your implementation of GetType is
+        functioning correctly.
+     */
     public void testGetType() {
         // content://com.xabarin.app.popularmovies/movie/
-        String type = mContext.getContentResolver().getType(MovieEntry.CONTENT_URI);
+        String type = mContext.getContentResolver().getType(FavMovieEntry.CONTENT_URI);
+        // vnd.android.cursor.dir/com.example.android.sunshine.app/weather
+        assertEquals("Error: the FavMovieEntry CONTENT_URI should return FavMovieEntry.CONTENT_TYPE",
+                FavMovieEntry.CONTENT_TYPE, type);
+
+        type = mContext.getContentResolver().getType(MovieEntry.CONTENT_URI);
         // vnd.android.cursor.dir/com.example.android.sunshine.app/weather
         assertEquals("Error: the MovieEntry CONTENT_URI should return MovieEntry.CONTENT_TYPE",
                 MovieEntry.CONTENT_TYPE, type);
@@ -117,18 +134,12 @@ public class TestProvider extends AndroidTestCase {
 
     /*
         This test uses the database directly to insert and then uses the ContentProvider to
-        read out the data.  Uncomment this test to see if the basic weather query functionality
-        given in the ContentProvider is working correctly.
+        read out the data.
      */
-    public void testBasicWeatherQuery() {
-        // insert our test records into the database
-        PopularMoviesDBHelper dbHelper = new PopularMoviesDBHelper(mContext);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+    public void testBasicMovieQuery() {
 
         ContentValues testValues = TestUtilities.createPopularMovieRecord();
-        long locationRowId = TestUtilities.insertPopularMovieValues(mContext);
-
-        db.close();
+        TestUtilities.insertPopularMovieValues(mContext, testValues);
 
         // Test the basic content provider query
         Cursor movieCursor = mContext.getContentResolver().query(
@@ -140,7 +151,29 @@ public class TestProvider extends AndroidTestCase {
         );
 
         // Make sure we get the correct cursor out of the database
-        TestUtilities.validateCursor("testBasicWeatherQuery", movieCursor, testValues);
+        TestUtilities.validateCursor("testBasicMovieQuery", movieCursor, testValues);
+    }
+
+    /*
+        This test uses the database directly to insert and then uses the ContentProvider to
+        read out the data.
+     */
+    public void testBasicFavMovieQuery() {
+
+        ContentValues testValues = TestUtilities.createPopularMovieRecord();
+        TestUtilities.insertPopularFavMovieValues(mContext, testValues);
+
+        // Test the basic content provider query
+        Cursor movieCursor = mContext.getContentResolver().query(
+                PopularMoviesContract.FavMovieEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        // Make sure we get the correct cursor out of the database
+        TestUtilities.validateCursor("testBasicFavMovieQuery", movieCursor, testValues);
     }
 
     // ===========================================================

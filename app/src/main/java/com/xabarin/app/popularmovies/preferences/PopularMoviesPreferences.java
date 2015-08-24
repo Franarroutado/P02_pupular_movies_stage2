@@ -51,8 +51,12 @@ public class PopularMoviesPreferences {
                 mContext.getString(R.string.pref_apikey_default));
     }
 
-    public String getSortByPopularity() {
-        return mPreferences.getString(mContext.getString(R.string.sortByPopularity_key), null);
+    /**
+     * This method contains the default sort option when the app is started the first time
+     * @return
+     */
+    public String getDefaultSortBy() {
+        return mPreferences.getString("sortByPopularity_key", null);
     }
 
     // ===========================================================
