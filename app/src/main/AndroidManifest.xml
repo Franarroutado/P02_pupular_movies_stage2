@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.SettingsActivity"
+            android:name=".preferences.GeneralPreferencesActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".ui.main.PopularMoviesActivity" >
             <meta-data

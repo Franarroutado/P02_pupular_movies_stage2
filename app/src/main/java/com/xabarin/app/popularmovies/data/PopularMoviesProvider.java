@@ -5,7 +5,9 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 
 import com.xabarin.app.popularmovies.data.PopularMoviesContract.FavMovieEntry;
 import com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
@@ -25,7 +27,6 @@ public class PopularMoviesProvider extends ContentProvider {
     // ===========================================================
 
     private static final String LOG_TAG = PopularMoviesProvider.class.getSimpleName();
-    private PopularMoviesDBHelper mOpenHelper;
 
     // The URI Matcher used by this content provider.
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -100,6 +101,7 @@ public class PopularMoviesProvider extends ContentProvider {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
         myCursor.setNotificationUri(getContext().getContentResolver(), uri);
+        Log.v(LOG_TAG, "Query successfully contains " + myCursor.getCount()+ " rows!.");
         return myCursor;
     }
 
@@ -218,8 +220,33 @@ public class PopularMoviesProvider extends ContentProvider {
         if (rowsDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-
         return rowsDeleted;
+    }
+
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        final SQLiteDatabase db = mMoviesDBHelper.getWritableDatabase();
+        switch (sUriMatcher.match(uri)) {
+            case POPULAR_MOVIES:
+                db.beginTransaction();
+                int returnCount = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(MovieEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                Log.v(LOG_TAG, "BulkInsert successfully inserted " + returnCount + " rows!.");
+                return returnCount;
+            default:
+                return super.bulkInsert(uri, values);
+        }
     }
 
     // You do not need to call this method. This is a method specifically to assist the testing

@@ -6,9 +6,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.xabarin.app.popularmovies.R;
-import com.xabarin.app.popularmovies.preferences.PopularMoviesPreferences;
+import com.xabarin.app.popularmovies.preferences.GeneralPreferences;
+import com.xabarin.app.popularmovies.preferences.GeneralPreferencesActivity;
 import com.xabarin.app.popularmovies.ui.BaseActivity;
-import com.xabarin.app.popularmovies.ui.SettingsActivity;
+
 
 public class PopularMoviesActivity extends BaseActivity {
 
@@ -52,18 +53,18 @@ public class PopularMoviesActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-        PopularMoviesPreferences preferences = new PopularMoviesPreferences(getApplicationContext());
-        String sortOption =  preferences.getDefaultSortBy();
+        GeneralPreferences preferences = new GeneralPreferences(getApplicationContext());
+        //String sortOption = GeneralPreferences.mapSortByToString(preferences.getSortByEnumPreference());
 
         // update the location in our second pane using the fragment manager
-        if (sortOption != null && !sortOption.equals(mSortOption)) {
-            PopularMoviesFragment pmf = (PopularMoviesFragment) getFragmentManager().findFragmentById(R.id.activity_fragment_container);
-            if (null != pmf) {
-                pmf.onSortByChanged();
-            }
-        }
+//        if (sortOption != null && !sortOption.equals(mSortOption)) {
+//            PopularMoviesFragment pmf = (PopularMoviesFragment) getFragmentManager().findFragmentById(R.id.activity_fragment_container);
+//            if (null != pmf) {
+//                pmf.onSortByChanged();
+//            }
+//        }
 
-        mSortOption = sortOption;
+        mSortOption = GeneralPreferences.mapSortByToString(preferences.getSortByEnumPreference());
     }
 
     @Override
@@ -83,7 +84,7 @@ public class PopularMoviesActivity extends BaseActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             // Call intent explicity
-            startActivity(new Intent(this, SettingsActivity.class));
+            startActivity(new Intent(this, GeneralPreferencesActivity.class));
             return true;
         }
 

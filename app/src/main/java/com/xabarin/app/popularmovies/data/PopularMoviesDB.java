@@ -117,7 +117,8 @@ public class PopularMoviesDB {
 
 
     public static int addMovieCollection(Context context, ContentValues[] contentValues) {
-        return bulkInsert(context, contentValues);
+        return context.getContentResolver().bulkInsert(MovieEntry.CONTENT_URI, contentValues);
+        // return bulkInsert(context, contentValues);
     }
 
     // ===========================================================

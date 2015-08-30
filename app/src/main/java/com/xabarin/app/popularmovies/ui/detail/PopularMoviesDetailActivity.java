@@ -6,8 +6,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.xabarin.app.popularmovies.R;
+import com.xabarin.app.popularmovies.preferences.GeneralPreferencesActivity;
 import com.xabarin.app.popularmovies.ui.BaseActivity;
-import com.xabarin.app.popularmovies.ui.SettingsActivity;
 import com.xabarin.app.popularmovies.ui.main.PopularMoviesActivity;
 
 public class PopularMoviesDetailActivity extends BaseActivity {
@@ -60,7 +60,7 @@ public class PopularMoviesDetailActivity extends BaseActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             // Call intent explicity
-            startActivity(new Intent(this, SettingsActivity.class));
+            startActivity(new Intent(this, GeneralPreferencesActivity.class));
             return true;
         }
 

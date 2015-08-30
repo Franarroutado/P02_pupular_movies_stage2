@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <item android:id="@+id/action_share"
+        android:title="@string/action_share"
+    />
+
+    <item
+        android:title="@string/action_sort_options"
+        android:icon="@drawable/ic_sort_black_24dp"
+        android:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/action_menuSortMostPopular"
+                android:title="@string/action_most_popular" />
+            <item
+                android:id="@+id/action_menuSortHighestRanked"
+                android:title="@string/action_highest_rated" />
+            <item
+                android:id="@+id/action_menuFavorite"
+                android:title="@string/action_favorite" />
+        </menu>
+    </item>
+</menu>
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<menu xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--xmlns:app="http://schemas.android.com/apk/res-auto">-->
+<!--<item android:id="@+id/action_share"-->
+    <!--android:title="@string/action_share"-->
+    <!--app:actionProviderClass="android.support.v7.widget.ShareActionProvider" />-->
+<!--</menu>-->

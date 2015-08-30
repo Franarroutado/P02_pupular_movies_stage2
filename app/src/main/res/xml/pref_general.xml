@@ -2,10 +2,10 @@
 
     <EditTextPreference
         android:title="@string/pref_apikey_label"
-        android:key="@string/pref_apikey_key"
-        android:defaultValue="@string/pref_apikey_default"
         android:inputType="text"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:key="@string/pref_apikey_key"
+        android:defaultValue="@string/pref_apikey_default" />
 
     <!--<CheckBoxPreference-->
         <!--android:key="example_checkbox"-->

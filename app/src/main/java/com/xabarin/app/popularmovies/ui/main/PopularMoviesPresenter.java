@@ -6,9 +6,10 @@ import android.util.Log;
 import com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
 import com.xabarin.app.popularmovies.data.PopularMoviesDB;
 import com.xabarin.app.popularmovies.model.MoviesAPI;
+import com.xabarin.app.popularmovies.model.SortBy;
 import com.xabarin.app.popularmovies.model.movies.Movie;
 import com.xabarin.app.popularmovies.model.movies.MoviesCollection;
-import com.xabarin.app.popularmovies.preferences.PopularMoviesPreferences;
+import com.xabarin.app.popularmovies.preferences.GeneralPreferences;
 
 import java.util.Vector;
 
@@ -35,7 +36,6 @@ public class PopularMoviesPresenter {
     // ===========================================================
 
     private PopularMoviesView mView;
-    private PopularMoviesPreferences mPreferences;
 
     // ===========================================================
     // Constructors
@@ -58,31 +58,26 @@ public class PopularMoviesPresenter {
     // ===========================================================
 
 
-    public void requestMovies(String sortBy) {
+    public void requestMovies(SortBy sortBy, String codeApi) {
 
         RestAdapter myRestAdapter = new RestAdapter.Builder().setEndpoint(BASE_URL).build();
         MoviesAPI myMoviesAPI = myRestAdapter.create(MoviesAPI.class);
+        String sortByOption  = GeneralPreferences.mapSortByToString(sortBy);
 
-        myMoviesAPI.getMoviesByHighestRated(new Callback<MoviesCollection>() {
+        myMoviesAPI.getMovies(sortByOption, codeApi, new Callback<MoviesCollection>() {
             @Override
             public void success(MoviesCollection moviesCollection, Response response) {
-                Log.v(LOG_TAG, "Sucessfully fetching movies. ");
+                Log.v(LOG_TAG, "Successfully fetching movies from the Internet. ");
                 insertPopularMovies(moviesCollection);
                 mView.onRequestMoviesSuccess(moviesCollection);
             }
 
             @Override
             public void failure(RetrofitError error) {
-                Log.e(LOG_TAG, "Error fetching movies. " + error.toString());
+                Log.e(LOG_TAG, "Error fetching movies from the Internet. " + error.toString());
             }
         });
-    }
 
-    private String getMoviesdbAPI() {
-        if (null == mPreferences) {
-            mPreferences = new PopularMoviesPreferences(mView.getViewActivity());
-        }
-        return mPreferences.getMovieDBAPIKey();
     }
 
     private void insertPopularMovies(MoviesCollection moviesCollection) {
@@ -115,7 +110,7 @@ public class PopularMoviesPresenter {
 
             PopularMoviesDB.addMovieCollection(mView.getViewActivity(), cvArray);
 
-            // numInsertedRows = mView.getViewActivity().getContentResolver().bulkInsert(FavMovieEntry.CONTENT_URI, cvArray);
+            numInsertedRows = cvArray.length;
 
             if (numInsertedRows == 0) {
                 Log.v(LOG_TAG, "Error bulk insert");

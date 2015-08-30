@@ -36,11 +36,11 @@ public interface MoviesAPI {
     // Methods
     // ===========================================================
 
-        @GET("/3/discover/movie?sort_by=popularity.desc&api_key=fb26558156aac88aaa33978aab72662f")
-        public void getMoviesByPopularity(Callback<MoviesCollection> response);
-
-        @GET("/3/discover/movie?sort_by=vote_average.desc&api_key=fb26558156aac88aaa33978aab72662f")
-        public void getMoviesByHighestRated(Callback<MoviesCollection> response);
+//        @GET("/3/discover/movie?sort_by=popularity.desc&api_key=fb26558156aac88aaa33978aab72662f")
+//        public void getMoviesByPopularity(Callback<MoviesCollection> response);
+//
+//        @GET("/3/discover/movie?sort_by=vote_average.desc&api_key=fb26558156aac88aaa33978aab72662f")
+//        public void getMoviesByHighestRated(Callback<MoviesCollection> response);
 
         @GET("/3/discover/movie")
         public void getMovies(@Query("sort_by") String sortBy, @Query("api_key") String ApiKey, Callback<MoviesCollection> response);

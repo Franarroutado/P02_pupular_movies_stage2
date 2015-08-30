@@ -10,6 +10,11 @@ public final class Constants {
     // Final Fields
     // ===========================================================
 
+    /**
+     * It is userd to retrieve preferences
+     */
+    public static final String BUNDLE_KEY_ROOT = "com.xabarin.app.popularmovies";
+
     // This key is used for store and retrieve EXTRA data between activities.
     public static final String EXTRA_MOVIE_DETAIL_KEY = "movieDetail";
 
