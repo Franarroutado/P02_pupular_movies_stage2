@@ -32,8 +32,15 @@ public class PopularMoviesProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
     static final int POPULAR_MOVIES = 100;
+    static final int POPULAR_MOVIES_BY_ID = 101;
     static final int POPULAR_FAV_MOVIES = 200;
 
+
+    /**
+     * Represents the MOVIE._ID = ?
+     */
+    private static final String sIDMovieSelection =
+        MovieEntry.TABLE_NAME + "." + MovieEntry._ID + " = ?";
 
     // ===========================================================
     // Fields
@@ -78,7 +85,7 @@ public class PopularMoviesProvider extends ContentProvider {
         Cursor myCursor;
         switch (sUriMatcher.match(uri)) {
             // "movie"
-            case POPULAR_MOVIES: {
+            case POPULAR_MOVIES :
                 myCursor = mMoviesDBHelper.getReadableDatabase().query(
                         MovieEntry.TABLE_NAME,
                         projection,
@@ -86,9 +93,11 @@ public class PopularMoviesProvider extends ContentProvider {
                         selectionArgs,
                         null, null, sortOrder);
                 break;
-            }
+            case POPULAR_MOVIES_BY_ID :
+                myCursor = getMovieById(uri, projection, sortOrder);
+                break;
             // "fav_movie"
-            case POPULAR_FAV_MOVIES: {
+            case POPULAR_FAV_MOVIES :
                 myCursor = mMoviesDBHelper.getReadableDatabase().query(
                         FavMovieEntry.TABLE_NAME,
                         projection,
@@ -96,7 +105,6 @@ public class PopularMoviesProvider extends ContentProvider {
                         selectionArgs,
                         null, null, sortOrder);
                 break;
-            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -272,10 +280,32 @@ public class PopularMoviesProvider extends ContentProvider {
         // 2) Use the addURI function to match each of the types.  Use the constants from
         // PopularMoviesContract to help define the types to the UriMatcher.
         sURIMatcher.addURI(CONTENT_AUTHORITY, PATH_MOVIE, POPULAR_MOVIES);
+        sURIMatcher.addURI(CONTENT_AUTHORITY, PATH_MOVIE + "/#", POPULAR_MOVIES_BY_ID);
         sURIMatcher.addURI(CONTENT_AUTHORITY, PATH_FAV_MOVIE, POPULAR_FAV_MOVIES);
 
         // 3) Return the new matcher!
         return sURIMatcher;
+    }
+
+    private Cursor getMovieById(Uri uri, String[] projection, String sortOrder) {
+        Long lngMovieID = PopularMoviesContract.MovieEntry.getIdFromUri(uri);
+
+        String selection;
+        String[] selectionArgs;
+        if (lngMovieID == 0) {
+            selection = null;
+            selectionArgs = null;
+        } else {
+            selection = sIDMovieSelection;
+            selectionArgs = new String[]{ lngMovieID.toString() };
+        }
+
+        return mMoviesDBHelper.getReadableDatabase().query(
+                MovieEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null, null, sortOrder);
     }
 
     // ===========================================================

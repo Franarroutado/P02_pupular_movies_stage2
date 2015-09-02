@@ -1,8 +1,70 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+    <!--&lt;!&ndash; Base application theme. &ndash;&gt;-->
+    <!--<style name="AppTheme" parent="android:Theme.Material.Light">-->
+        <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+        <!--<item name="android:colorPrimary">@color/popularmovies_blue</item>-->
+        <!--<item name="colorPrimaryDark">@color/popularmovies_dark_blue</item>-->
+    <!--</style>-->
+
+    <!--&lt;!&ndash; Main activity theme. &ndash;&gt;-->
+    <!--<style name="PopularMoviesTheme" parent="AppTheme">-->
+        <!--&lt;!&ndash;<item name="actionBarStyle">@style/ActionBar.Solid.Sunshine.NoTitle</item>&ndash;&gt;-->
+    <!--</style>-->
+
+    <!-- main activity action bar styles -->
+    <!--<style name="ActionBar.Solid.Sunshine.NoTitle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">-->
+        <!--<item name="displayOptions">useLogo|showHome</item>-->
+        <!--<item name="logo">@drawable/ic_logo</item>-->
+    <!--</style>-->
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/popularmovies_blue</item>
+        <item name="colorPrimaryDark">@color/popularmovies_dark_blue</item>
     </style>
+
+    <!-- Main activity theme. -->
+    <style name="PopularMoviesTheme" parent="AppTheme">
+    <!--<item name="actionBarStyle">@style/ActionBar.Solid.Sunshine.NoTitle</item>-->
+    </style>
+
+    <!-- main activity action bar styles -->
+    <style name="ActionBar.Solid.Sunshine.NoTitle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="displayOptions">useLogo|showHome</item>
+        <item name="logo">@drawable/ic_logo</item>
+    </style>
+
+    <style name="MenuLabelsStyle">
+        <item name="android:background">@drawable/fab_label_background</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="MenuButtonsStyle">
+        <item name="fab_size">mini</item>
+        <item name="fab_showAnimation">@anim/jump_from_down</item>
+        <item name="fab_hideAnimation">@anim/jump_to_down</item>
+        <item name="fab_shadowColor">#444</item>
+        <item name="fab_colorNormal">#FFB805</item>
+        <item name="fab_colorPressed">#F2AB00</item>
+        <item name="fab_colorRipple">#D99200</item>
+    </style>
+
+    <style name="MenuButtonsSmall">
+        <item name="fab_size">mini</item>
+        <item name="fab_colorNormal">#1565C0</item>
+        <item name="fab_colorPressed">#2272CD</item>
+        <item name="fab_colorRipple">#62B2FF</item>
+    </style>
+
+    <style name="MenuButtonsSmall.Green">
+        <item name="fab_colorNormal">#43A047</item>
+        <item name="fab_colorPressed">#2E7D32</item>
+        <item name="fab_colorRipple">#1B5E20</item>
+    </style>
+
 
 </resources>

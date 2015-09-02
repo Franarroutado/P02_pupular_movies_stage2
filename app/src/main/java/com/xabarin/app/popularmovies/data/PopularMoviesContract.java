@@ -108,6 +108,7 @@ public class PopularMoviesContract {
         public static final int CURSOR_COLUMN_INDEX_FOR_VOTE_AVERAGE =  4;
         public static final int CURSOR_COLUMN_INDEX_FOR_RELEASE_DATE =  5;
 
+
         /**
          *  Return the Uri used by the ContentProvider "insert" method
          * @param id
@@ -115,6 +116,15 @@ public class PopularMoviesContract {
          */
         public static Uri buildMoviesUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        /**
+         * Returns the Movie ID value
+         * @param uri
+         * @return Long
+         */
+        public static Long getIdFromUri(Uri uri) {
+            return Long.parseLong(uri.getPathSegments().get(1));
         }
     }
 
@@ -130,7 +140,7 @@ public class PopularMoviesContract {
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAV_MOVIE).build();
 
 
-        // Thist two constants stores the MIME type used by getType function in the custom Content
+        // This two constants stores the MIME type used by getType function in the custom Content
         // provider to identify the type of content this provider replies.
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAV_MOVIE;
@@ -196,5 +206,13 @@ public class PopularMoviesContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
+        /**
+         * Returns the Movie ID value
+         * @param uri
+         * @return Long
+         */
+        public Long getIdFromUri(Uri uri) {
+            return Long.parseLong(uri.getPathSegments().get(1));
+        }
     }
 }

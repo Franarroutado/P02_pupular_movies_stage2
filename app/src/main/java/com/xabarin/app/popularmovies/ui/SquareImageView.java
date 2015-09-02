@@ -1,22 +1,21 @@
 package com.xabarin.app.popularmovies.ui;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.os.Bundle;
-
-import com.xabarin.app.popularmovies.R;
+import android.content.Context;
+import android.util.AttributeSet;
+import android.widget.ImageView;
 
 /**
- * Created by francisco on 8/08/15.
+ * Created by francisco on 30/08/15.
+ * http://www.rogcg.com/blog/2013/11/01/gridview-with-auto-resized-images-on-android
  */
-public class BaseActivity extends Activity {
+public class SquareImageView extends ImageView {
 
     // Ordering code based on github contributor https://github.com/sockeqwe
     // ===========================================================
     // Final Fields
     // ===========================================================
+
+    private static final Double ASPECT_RATIO_2_40 = 2.40;
 
     // ===========================================================
     // Fields
@@ -25,6 +24,21 @@ public class BaseActivity extends Activity {
     // ===========================================================
     // Constructors
     // ===========================================================
+
+    public SquareImageView(Context context)
+    {
+        super(context);
+    }
+
+    public SquareImageView(Context context, AttributeSet attrs)
+    {
+        super(context, attrs);
+    }
+
+    public SquareImageView(Context context, AttributeSet attrs, int defStyle)
+    {
+        super(context, attrs, defStyle);
+    }
 
     // ===========================================================
     // Getter & Setter
@@ -35,30 +49,27 @@ public class BaseActivity extends Activity {
     // ===========================================================
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fragment_container);
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        setMeasuredDimension(getMeasuredWidth(), getHeightByRatio(getMeasuredWidth(), ASPECT_RATIO_2_40));
     }
 
     // ===========================================================
     // Methods
     // ===========================================================
 
-    /**
-     * @param f              - fragment
-     * @param tag            - tag to find fragment by
-     * @param addToBackStack - true if adding fragment should be in backstack, false if not
-     */
-    public void attachFragment(Fragment f, String tag, boolean addToBackStack) {
-        FragmentManager myFragmentManager = getFragmentManager();
-        FragmentTransaction myFragmentTransaction = myFragmentManager.beginTransaction();
-        myFragmentTransaction.replace(R.id.activity_fragment_container, f, tag);
-        if (addToBackStack) {
-            myFragmentTransaction.addToBackStack(null);
-        }
-        myFragmentTransaction.commit();
-    }
 
+
+    /**
+     * Calc the height based on the ratio
+     * http://stackoverflow.com/questions/3461926/calculate-height-for-image-video-based-on-aspect-ratio-and-width
+     */
+    private int getHeightByRatio(int width, double ratio) {
+        Double dblResult = width * ratio;
+
+        return  dblResult.intValue();
+    }
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================

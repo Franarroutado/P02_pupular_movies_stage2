@@ -1,22 +1,60 @@
-<RelativeLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:paddingLeft="@dimen/activity_horizontal_margin"
-android:paddingRight="@dimen/activity_horizontal_margin"
-android:paddingTop="@dimen/activity_vertical_margin"
-android:paddingBottom="@dimen/activity_vertical_margin"
-tools:context=".PopularMoviesActivityFragment">
-
-<GridView android:id="@+id/gridMovies"
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:columnWidth="90dp"
-    android:numColumns="2"
-    android:verticalSpacing="0dp"
-    android:horizontalSpacing="0dp"
-    android:stretchMode="columnWidth">
-</GridView>
+    android:layout_height="match_parent">
 
-</RelativeLayout>
+    <GridView android:id="@+id/gridMovies"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:verticalSpacing="@dimen/grid_view_margin"
+        android:horizontalSpacing="@dimen/grid_view_margin"
+        android:stretchMode="columnWidth"
+        android:numColumns="2" >
+    </GridView>
+
+    <!--based on https://github.com/Clans/FloatingActionButton-->
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fabMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        fab:menu_labels_style="@style/MenuLabelsStyle"
+        fab:menu_labels_showAnimation="@anim/jump_from_down"
+        fab:menu_labels_hideAnimation="@anim/jump_to_down"
+        fab:menu_animationDelayPerItem="0"
+        fab:menu_shadowColor="#444"
+        fab:menu_colorNormal="#FFB805"
+        fab:menu_colorPressed="#F2AB00"
+        fab:menu_colorRipple="#D99200"
+        fab:menu_icon="@drawable/ic_menu">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabMostPopular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_favorite"
+            fab:fab_label="@string/fab_action_most_popular"
+            style="@style/MenuButtonsStyle" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabByRank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_edit"
+            fab:fab_label="@string/fab_action_highest_rated"
+            style="@style/MenuButtonsStyle" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabFavorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_star"
+            fab:fab_label="@string/fab_action_favorites"
+            style="@style/MenuButtonsStyle" />
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+</FrameLayout>

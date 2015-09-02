@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.xabarin.app.popularmovies.R;
@@ -26,7 +27,7 @@ public class ImageAdapter extends CursorAdapter {
 
     private final static String LOG_TAG = ImageAdapter.class.getSimpleName();
 
-    private final static String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/w185";
+    private final static String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/w342";
 
     // ===========================================================
     // Fields
@@ -68,10 +69,11 @@ public class ImageAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
+        // Log.v(LOG_TAG, BASE_IMAGE_URL + cursor.getString(2));
         Picasso.with(mContext)
                 .load(BASE_IMAGE_URL + cursor.getString(2))
-                .into((ImageView) view);
-
+                .into((ImageView) view.findViewById(R.id.picture));
+        ((TextView)view.findViewById(R.id.text)).setText(cursor.getString(1));
     }
 
     // ===========================================================

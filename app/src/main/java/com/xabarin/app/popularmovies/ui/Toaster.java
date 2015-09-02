@@ -1,17 +1,12 @@
 package com.xabarin.app.popularmovies.ui;
 
-import android.app.Fragment;
-import android.support.annotation.LayoutRes;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import butterknife.ButterKnife;
+import android.content.Context;
+import android.widget.Toast;
 
 /**
- * Created by francisco on 8/08/15.
+ * Created by francisco on 31/08/15.
  */
-public class BaseFragment extends Fragment {
+public class Toaster {
 
     // Ordering code based on github contributor https://github.com/sockeqwe
     // ===========================================================
@@ -26,6 +21,11 @@ public class BaseFragment extends Fragment {
     // Constructors
     // ===========================================================
 
+    public static Toast makeAtoast(Context context, CharSequence message) {
+
+        return Toast.makeText(context, message, Toast.LENGTH_SHORT);
+    }
+
     // ===========================================================
     // Getter & Setter
     // ===========================================================
@@ -37,16 +37,6 @@ public class BaseFragment extends Fragment {
     // ===========================================================
     // Methods
     // ===========================================================
-
-    protected View onCreateViewWithButterKnife(
-            @LayoutRes int layout,
-            LayoutInflater inflater,
-            ViewGroup container) {
-        View myView = inflater.inflate(layout, container, false);
-        ButterKnife.bind(this, myView);
-
-        return myView;
-    }
 
     // ===========================================================
     // Inner and Anonymous Classes

@@ -1,5 +1,6 @@
 package com.xabarin.app.popularmovies.ui.detail;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -7,10 +8,9 @@ import android.view.MenuItem;
 
 import com.xabarin.app.popularmovies.R;
 import com.xabarin.app.popularmovies.preferences.GeneralPreferencesActivity;
-import com.xabarin.app.popularmovies.ui.BaseActivity;
 import com.xabarin.app.popularmovies.ui.main.PopularMoviesActivity;
 
-public class PopularMoviesDetailActivity extends BaseActivity {
+public class DetailActivity extends Activity {
 
     // Ordering code based on github contributor https://github.com/sockeqwe
     // ===========================================================
@@ -38,8 +38,25 @@ public class PopularMoviesDetailActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (null == savedInstanceState) {
-            attachPopularMoviesFragment();
+        setContentView(R.layout.activity_detail);
+
+//        if (null == savedInstanceState) {
+//            attachPopularMoviesFragment();
+//        }
+
+        if (savedInstanceState == null) {
+            // Create the detail fragment and add it to the activity
+            // using a fragment transaction.
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(DetailFragment.DETAIL_URI,
+                    getIntent().getData());
+
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(arguments);
+            //attachPopularMoviesFragment();
+            getFragmentManager().beginTransaction()
+                    .add(R.id.popular_movies_detail_container, fragment)
+                    .commit();
         }
     }
 
@@ -70,10 +87,6 @@ public class PopularMoviesDetailActivity extends BaseActivity {
     // ===========================================================
     // Methods
     // ===========================================================
-
-    private void attachPopularMoviesFragment() {
-        super.attachFragment(PopularMoviesDetailFragment.makePopularMoviesDetailFragment(), LOG_TAG, false);
-    }
 
     // ===========================================================
     // Inner and Anonymous Classes

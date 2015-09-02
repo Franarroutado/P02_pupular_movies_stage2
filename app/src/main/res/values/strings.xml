@@ -17,5 +17,8 @@
 
     <string name="moviedb_image_url">http://image.tmdb.org/t/p/w185</string>
 
-
+    <!--FAB labels-->
+    <string name="fab_action_most_popular">Most popular</string>
+    <string name="fab_action_highest_rated">Highest rated</string>
+    <string name="fab_action_favorites">Favorite</string>
 </resources>

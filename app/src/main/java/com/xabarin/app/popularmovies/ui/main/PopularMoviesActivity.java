@@ -1,17 +1,19 @@
 package com.xabarin.app.popularmovies.ui.main;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.xabarin.app.popularmovies.R;
 import com.xabarin.app.popularmovies.preferences.GeneralPreferences;
 import com.xabarin.app.popularmovies.preferences.GeneralPreferencesActivity;
-import com.xabarin.app.popularmovies.ui.BaseActivity;
+import com.xabarin.app.popularmovies.ui.detail.DetailActivity;
 
 
-public class PopularMoviesActivity extends BaseActivity {
+public class PopularMoviesActivity extends AppCompatActivity implements PopularMoviesFragment.Callback {
 
     // Ordering code based on github contributor https://github.com/sockeqwe
     // ===========================================================
@@ -44,9 +46,24 @@ public class PopularMoviesActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (null == savedInstanceState) {
-//            attachPopularMoviesFragment();
+        setContentView(R.layout.activity_fragment_container);
+
+//        if (savedInstanceState == null) {
+//            // Create the detail fragment and add it to the activity
+//            // using a fragment transaction.
+//
+//            Bundle arguments = new Bundle();
+//            arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
+//
+//            DetailFragment fragment = new DetailFragment();
+//            fragment.setArguments(arguments);
+//
+//            getFragmentManager().beginTransaction()
+//                    .add(R.id.activity_fragment_container, fragment)
+//                    .commit();
 //        }
+//        PopularMoviesFragment popularMoviesFragment = (PopularMoviesFragment)getFragmentManager()
+//                .findFragmentById(R.id.activity_fragment_container);
     }
 
     @Override
@@ -91,13 +108,19 @@ public class PopularMoviesActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     *  PopularMoviesFragment.Callback implementation
+    */
+
+    @Override
+    public void onItemSelected(Uri uri) {
+        Intent intent = new Intent(this, DetailActivity.class).setData(uri);
+        startActivity(intent);
+    }
+
     // ===========================================================
     // Methods
     // ===========================================================
-
-    private void attachPopularMoviesFragment() {
-        super.attachFragment(PopularMoviesFragment.makePopularMoviesFragment(), LOG_TAG, false);
-    }
 
     // ===========================================================
     // Inner and Anonymous Classes
