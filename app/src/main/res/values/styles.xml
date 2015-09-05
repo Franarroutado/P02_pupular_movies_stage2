@@ -18,22 +18,22 @@
         <!--<item name="logo">@drawable/ic_logo</item>-->
     <!--</style>-->
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/popularmovies_blue</item>
-        <item name="colorPrimaryDark">@color/popularmovies_dark_blue</item>
-    </style>
+    <!--<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">-->
+        <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+        <!--<item name="colorPrimary">@color/popularmovies_blue</item>-->
+        <!--<item name="colorPrimaryDark">@color/popularmovies_dark_blue</item>-->
+    <!--</style>-->
 
-    <!-- Main activity theme. -->
-    <style name="PopularMoviesTheme" parent="AppTheme">
-    <!--<item name="actionBarStyle">@style/ActionBar.Solid.Sunshine.NoTitle</item>-->
-    </style>
+    <!--&lt;!&ndash; Main activity theme. &ndash;&gt;-->
+    <!--<style name="PopularMoviesTheme" parent="AppTheme">-->
+    <!--&lt;!&ndash;<item name="actionBarStyle">@style/ActionBar.Solid.Sunshine.NoTitle</item>&ndash;&gt;-->
+    <!--</style>-->
 
-    <!-- main activity action bar styles -->
-    <style name="ActionBar.Solid.Sunshine.NoTitle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="displayOptions">useLogo|showHome</item>
-        <item name="logo">@drawable/ic_logo</item>
-    </style>
+    <!--&lt;!&ndash; main activity action bar styles &ndash;&gt;-->
+    <!--<style name="ActionBar.Solid.Sunshine.NoTitle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">-->
+        <!--<item name="displayOptions">useLogo|showHome</item>-->
+        <!--<item name="logo">@drawable/ic_logo</item>-->
+    <!--</style>-->
 
     <style name="MenuLabelsStyle">
         <item name="android:background">@drawable/fab_label_background</item>
@@ -60,11 +60,27 @@
         <item name="fab_colorRipple">#62B2FF</item>
     </style>
 
-    <style name="MenuButtonsSmall.Green">
-        <item name="fab_colorNormal">#43A047</item>
-        <item name="fab_colorPressed">#2E7D32</item>
-        <item name="fab_colorRipple">#1B5E20</item>
+    <!--<style name="MenuButtonsSmall.Green">-->
+        <!--<item name="fab_colorNormal">#43A047</item>-->
+        <!--<item name="fab_colorPressed">#2E7D32</item>-->
+        <!--<item name="fab_colorRipple">#1B5E20</item>-->
+    <!--</style>-->
+
+    <style name="PopularMoviesTheme" parent="Base.Theme.DesignDemo">
     </style>
 
+    <style name="Base.Theme.DesignDemo" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#673AB7</item>
+        <item name="colorPrimaryDark">#512DA8</item>
+        <item name="colorAccent">#FF4081</item>
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
 
+    <style name="Widget.CardContent" parent="android:Widget">
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">24dp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
 </resources>

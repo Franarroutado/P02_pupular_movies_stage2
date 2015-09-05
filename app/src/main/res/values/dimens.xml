@@ -5,4 +5,12 @@
 
     <dimen name="tool_bar_height">56dp</dimen>
     <dimen name="grid_view_margin">2dp</dimen>
+
+
+    <!--this is for testing-->
+    <dimen name="detail_backdrop_height">456dp</dimen>
+    <dimen name="card_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="list_item_avatar_size">40dp</dimen>
 </resources>
+

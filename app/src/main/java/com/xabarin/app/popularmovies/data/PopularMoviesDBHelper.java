@@ -51,7 +51,6 @@ public class PopularMoviesDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
-        final String COMMA = ",";
         final String SQL_CREATE_MOVIE_TABLE =
                 SQL_CREATE_TABLE + MovieEntry.TABLE_NAME + " (" + returnCommonMovieColumns() + ");";
 

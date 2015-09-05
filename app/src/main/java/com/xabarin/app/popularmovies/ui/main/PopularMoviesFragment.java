@@ -70,8 +70,6 @@ public class PopularMoviesFragment extends Fragment
     @Bind(R.id.fabMostPopular) com.github.clans.fab.FloatingActionButton mFabMostPopular;
     @Bind(R.id.fabByRank) com.github.clans.fab.FloatingActionButton mFabHighestRated;
 
-
-
     // ===========================================================
     // Constructors
     // ===========================================================
@@ -93,7 +91,6 @@ public class PopularMoviesFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        //mPresenter.requestMovies(mPreferences.getSortByEnumPreference(), getPreferenceAPIKey());
     }
 
     @Override
@@ -102,47 +99,6 @@ public class PopularMoviesFragment extends Fragment
         // Add this line in order for this fragment to handle menu
         //setHasOptionsMenu(true);
     }
-
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        inflater.inflate(R.menu.popular_movies_fragment_menu_tobedeleted, menu);
-//
-//        // Retrieve the share menu item
-//        //MenuItem menuItem = menu.findItem(R.id.action_share);
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//
-//        SortBy sortByDefault = mPreferences.getSortByEnumPreference();
-//        SortBy sortBySelected = null;
-//        switch (item.getItemId()) {
-//            case R.id.action_menuSortHighestRanked :
-//                sortBySelected = SortBy.HIGHEST_RATED;
-//                Log.v(LOG_TAG, "OrderBy HighestRanked");
-//                break;
-//            case R.id.action_menuSortMostPopular :
-//                sortBySelected = SortBy.MOST_POPULAR;
-//                Log.v(LOG_TAG, "OrderBy MostPopular");
-//                break;
-//            case R.id.action_menuFavorite :
-//                sortBySelected = SortBy.FAVORITES;
-//                Log.v(LOG_TAG, "OrderBy Favorite");
-//                break;
-//        }
-//
-//        // Only reload movies if the option selected is different of the current.
-//        if (null != sortBySelected && !sortBySelected.equals(sortByDefault)) {
-//            mPreferences.setSortByPreference(sortBySelected);
-//            onSortByChanged();
-//            return true;
-//        }
-//        return false;
-//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

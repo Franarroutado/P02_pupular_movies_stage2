@@ -10,4 +10,6 @@
     <color name="popularmovies_blue">#ff1ca8f4</color>
     <color name="popularmovies_dark_blue">#0288D1</color>
 
+    <!--this is for testing-->
+    <color name="window_background">#FFF5F5F5</color>
 </resources>

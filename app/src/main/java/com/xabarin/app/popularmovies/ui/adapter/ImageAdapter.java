@@ -27,7 +27,7 @@ public class ImageAdapter extends CursorAdapter {
 
     private final static String LOG_TAG = ImageAdapter.class.getSimpleName();
 
-    private final static String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/w342";
+    private final static String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/w185";
 
     // ===========================================================
     // Fields

@@ -15,7 +15,7 @@ public class SquareImageView extends ImageView {
     // Final Fields
     // ===========================================================
 
-    private static final Double ASPECT_RATIO_2_40 = 2.40;
+    private static final Double ASPECT_RATIO_2_40 = 1.40;
 
     // ===========================================================
     // Fields

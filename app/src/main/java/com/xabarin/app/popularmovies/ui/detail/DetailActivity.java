@@ -1,8 +1,9 @@
 package com.xabarin.app.popularmovies.ui.detail;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -10,7 +11,8 @@ import com.xabarin.app.popularmovies.R;
 import com.xabarin.app.popularmovies.preferences.GeneralPreferencesActivity;
 import com.xabarin.app.popularmovies.ui.main.PopularMoviesActivity;
 
-public class DetailActivity extends Activity {
+public class DetailActivity extends AppCompatActivity
+    implements DetailFragment.FragmentSupportActionBar {
 
     // Ordering code based on github contributor https://github.com/sockeqwe
     // ===========================================================
@@ -84,6 +86,12 @@ public class DetailActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void configureSupportActionBar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
     // ===========================================================
     // Methods
     // ===========================================================
@@ -91,6 +99,7 @@ public class DetailActivity extends Activity {
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================
+
 
 
 }

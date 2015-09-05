@@ -21,4 +21,10 @@
     <string name="fab_action_most_popular">Most popular</string>
     <string name="fab_action_highest_rated">Highest rated</string>
     <string name="fab_action_favorites">Favorite</string>
+
+    <!--Detail movie form-->
+    <string name="form_synopsis">Synopsis</string>
+    <string name="form_release_date">Release date</string>
+    <string name="form_rate">Rate</string>
+
 </resources>
