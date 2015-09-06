@@ -77,7 +77,6 @@ public class PopularMoviesPresenter {
                 Log.e(LOG_TAG, "Error fetching movies from the Internet. " + error.toString());
             }
         });
-
     }
 
     private void insertPopularMovies(MoviesCollection moviesCollection) {

@@ -129,7 +129,7 @@ public class PopularMoviesFragment extends Fragment
         mFabHighestRated.setOnClickListener(fabClickListener);
         mFabMostPopular.setOnClickListener(fabClickListener);
 
-        mFabFavorite.setOnClickListener(fabClickListener);
+       // mFabFavorite.setOnClickListener(fabClickListener);
 
         return rootView;
     }

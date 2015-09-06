@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
+import com.xabarin.app.popularmovies.data.PopularMoviesContract.FavMovieEntry;
 
 /**
  * This class takes care to backing up the movies requested by REST services against http://api.themoviedb.org
@@ -53,6 +54,21 @@ public class PopularMoviesDB {
         return popularMovieRowId;
     }
 
+    public static Long insertFavMovie(Context context, ContentValues values) {
+        // insert our test records into the database
+        PopularMoviesDBHelper dbHelper = new PopularMoviesDBHelper(context);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        long popularMovieRowId =
+                db.insert(FavMovieEntry.TABLE_NAME, null, values);
+
+        db.close();
+
+        return popularMovieRowId;
+    }
+
+
+
     /**
      * This method clears all data from the table. It is the closest thing to the TRUNCATE TABLE.
      * @param context
@@ -81,6 +97,23 @@ public class PopularMoviesDB {
                 null);
 
         return cursor;
+    }
+
+    public static Boolean existFabMovie(Context context, String idMovie) {
+
+        PopularMoviesDBHelper dbHelper = new PopularMoviesDBHelper(context);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Log.v(LOG_TAG, "Exists " + idMovie);
+        String Query = "Select * from " + FavMovieEntry.TABLE_NAME + " where " + FavMovieEntry.COLUMN_ID + "=" + idMovie;
+        Log.v(LOG_TAG, "Query " + Query);
+        Cursor cursor = db.rawQuery(Query, null);
+
+        if (cursor.getCount() <= 0) {
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
     }
 
     private static int bulkInsert(Context context, ContentValues[] values) {

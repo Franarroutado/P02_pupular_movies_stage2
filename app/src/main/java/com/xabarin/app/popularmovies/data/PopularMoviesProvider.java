@@ -34,6 +34,7 @@ public class PopularMoviesProvider extends ContentProvider {
     static final int POPULAR_MOVIES = 100;
     static final int POPULAR_MOVIES_BY_ID = 101;
     static final int POPULAR_FAV_MOVIES = 200;
+    static final int POPULAR_FAV_MOVIES_BY_ID = 201;
 
 
     /**
@@ -126,7 +127,7 @@ public class PopularMoviesProvider extends ContentProvider {
                         null,
                         values);
                 if (_id > 0) {
-                    returnUri = PopularMoviesContract.FavMovieEntry.buildMoviesUri(_id);
+                    returnUri = FavMovieEntry.buildMoviesUri(_id);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
@@ -139,7 +140,7 @@ public class PopularMoviesProvider extends ContentProvider {
                         null,
                         values);
                 if (_id > 0) {
-                    returnUri = PopularMoviesContract.FavMovieEntry.buildMoviesUri(_id);
+                    returnUri = FavMovieEntry.buildMoviesUri(_id);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
@@ -203,22 +204,32 @@ public class PopularMoviesProvider extends ContentProvider {
         if ( null == selection ) selection = "1";
 
         switch (sUriMatcher.match(uri)) {
-            case POPULAR_MOVIES: {
+            case POPULAR_MOVIES:
                 rowsDeleted = mMoviesDBHelper.getWritableDatabase().delete(
                         MovieEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
                 break;
-            }
-            case POPULAR_FAV_MOVIES: {
+            case POPULAR_MOVIES_BY_ID:
                 rowsDeleted = mMoviesDBHelper.getWritableDatabase().delete(
                         FavMovieEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
                 break;
-            }
+            case POPULAR_FAV_MOVIES:
+                rowsDeleted = mMoviesDBHelper.getWritableDatabase().delete(
+                        FavMovieEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
+            case POPULAR_FAV_MOVIES_BY_ID:
+                rowsDeleted = mMoviesDBHelper.getWritableDatabase().delete(
+                        FavMovieEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
             default:
-                throw new UnsupportedOperationException("The delete opertaion not supported: " + uri);
+                throw new UnsupportedOperationException("The delete operation not supported: " + uri);
         }
 
         // A null value deletes all rows. In my implementation of this, I only notified
@@ -281,6 +292,7 @@ public class PopularMoviesProvider extends ContentProvider {
         // PopularMoviesContract to help define the types to the UriMatcher.
         sURIMatcher.addURI(CONTENT_AUTHORITY, PATH_MOVIE, POPULAR_MOVIES);
         sURIMatcher.addURI(CONTENT_AUTHORITY, PATH_MOVIE + "/#", POPULAR_MOVIES_BY_ID);
+        sURIMatcher.addURI(CONTENT_AUTHORITY, PATH_FAV_MOVIE + "/#", POPULAR_FAV_MOVIES_BY_ID);
         sURIMatcher.addURI(CONTENT_AUTHORITY, PATH_FAV_MOVIE, POPULAR_FAV_MOVIES);
 
         // 3) Return the new matcher!

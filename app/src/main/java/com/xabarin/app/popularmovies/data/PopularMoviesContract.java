@@ -151,6 +151,7 @@ public class PopularMoviesContract {
         public static final String TABLE_NAME =            "fav_movie";
 
         // SQLite columns name
+        public static final String COLUMN_ID =             _ID;
         public static final String COLUMN_TITLE =          "title";
         public static final String COLUMN_POSTER_URL =     "poster";
         public static final String COLUMN_OVERVIEW =       "overview";
@@ -211,7 +212,7 @@ public class PopularMoviesContract {
          * @param uri
          * @return Long
          */
-        public Long getIdFromUri(Uri uri) {
+        public static Long getIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(1));
         }
     }
