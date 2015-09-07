@@ -9,10 +9,11 @@ import android.view.MenuItem;
 
 import com.xabarin.app.popularmovies.R;
 import com.xabarin.app.popularmovies.preferences.GeneralPreferencesActivity;
+import com.xabarin.app.popularmovies.ui.FragmentSupportActionBar;
 import com.xabarin.app.popularmovies.ui.main.PopularMoviesActivity;
 
 public class DetailActivity extends AppCompatActivity
-    implements DetailFragment.FragmentSupportActionBar {
+    implements FragmentSupportActionBar {
 
     // Ordering code based on github contributor https://github.com/sockeqwe
     // ===========================================================
@@ -42,9 +43,6 @@ public class DetailActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-//        if (null == savedInstanceState) {
-//            attachPopularMoviesFragment();
-//        }
 
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
@@ -56,8 +54,8 @@ public class DetailActivity extends AppCompatActivity
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(arguments);
             //attachPopularMoviesFragment();
-            getFragmentManager().beginTransaction()
-                    .add(R.id.popular_movies_detail_container, fragment)
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.main_content, fragment)
                     .commit();
         }
     }
@@ -99,7 +97,5 @@ public class DetailActivity extends AppCompatActivity
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================
-
-
 
 }

@@ -1,21 +1,20 @@
 package com.xabarin.app.popularmovies.ui.detail;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.LoaderManager;
 import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +26,11 @@ import com.squareup.picasso.Picasso;
 import com.xabarin.app.popularmovies.R;
 import com.xabarin.app.popularmovies.data.PopularMoviesContract.FavMovieEntry;
 import com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
+import com.xabarin.app.popularmovies.model.reviews.Review;
 import com.xabarin.app.popularmovies.model.reviews.ReviewsCollection;
 import com.xabarin.app.popularmovies.model.videos.Video;
 import com.xabarin.app.popularmovies.model.videos.VideosCollection;
+import com.xabarin.app.popularmovies.ui.FragmentSupportActionBar;
 import com.xabarin.app.popularmovies.ui.Toaster;
 
 import butterknife.Bind;
@@ -45,8 +46,9 @@ public class DetailFragment extends Fragment
     // ===========================================================
     // Final Fields
     // ===========================================================
-
     private final static String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/w500";
+    private final static String BASE_YOUTUBE_URL = "http://www.youtube.com/watch?v=";
+    private final static String INTENT_YOUTUBE = "vnd.youtube:";
 
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
 
@@ -66,14 +68,14 @@ public class DetailFragment extends Fragment
     @Bind(R.id.txtPlotSynopsis)     TextView mtxtViewPlotSynopsis;
     @Bind(R.id.txtReleaseDate)      TextView mtxtViewReleaseDate;
     @Bind(R.id.txtUserRating)       TextView mtxtViewUserRating;
-    @Bind(R.id.appbar)              android.support.design.widget.AppBarLayout mappbar;
+
     @Bind(R.id.imgPoster)           com.xabarin.app.popularmovies.ui.SquareImageView mImgViewPoster;
     @Bind(R.id.collapsing_toolbar)  CollapsingToolbarLayout mcollapsingToolbar;
     @Bind(R.id.toolbar)             Toolbar mToolBar;
     @Bind(R.id.fabFavorite)         android.support.design.widget.FloatingActionButton mFabFavorite;
 
     @Bind(R.id.container_videos)    LinearLayout mContainerVideos;
-
+    @Bind(R.id.container_reviews)    LinearLayout mContainerReviews;
 
     // ===========================================================
     // Constructors
@@ -113,14 +115,15 @@ public class DetailFragment extends Fragment
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
 
+        if (mUri != null) { // this controls when the detail is FIRST TIME created using two pane configuration.
+            getLoaderManager().initLoader(DETAIL_LOADER, null, this);
 
-        String idMovie = mUri.getLastPathSegment();
-        String apiKey = getPreferenceAPIKey();
-        mPresenter.requestReviews(idMovie, apiKey);
-        mPresenter.requestVideos(idMovie, apiKey);
-
+            String idMovie = mUri.getLastPathSegment();
+            String apiKey = getPreferenceAPIKey();
+            mPresenter.requestReviews(idMovie, apiKey);
+            mPresenter.requestVideos(idMovie, apiKey);
+        }
 
         super.onActivityCreated(savedInstanceState);
     }
@@ -152,7 +155,7 @@ public class DetailFragment extends Fragment
             mContentValues.put(FavMovieEntry.COLUMN_OVERVIEW,       data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_OVERVIEW));
             mContentValues.put(FavMovieEntry.COLUMN_RELEASE_DATE,   data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_RELEASE_DATE));
             mContentValues.put(FavMovieEntry.COLUMN_VOTE_AVERAGE,   data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_VOTE_AVERAGE));
-            mContentValues.put(FavMovieEntry.COLUMN_POSTER_URL, data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_POSTER_URL));
+            mContentValues.put(FavMovieEntry.COLUMN_POSTER_URL,     data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_POSTER_URL));
 
             mcollapsingToolbar.setTitle(    data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_TITLE));
             mtxtViewPlotSynopsis.setText(   data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_OVERVIEW));
@@ -200,9 +203,21 @@ public class DetailFragment extends Fragment
 
     @Override
     public void onRequestReviewsSuccess(ReviewsCollection reviewsCollection) {
-        Log.v(LOG_TAG, reviewsCollection.toString());
-    }
 
+        if(reviewsCollection != null && reviewsCollection.getResults().size() > 0) {
+
+            TextView txtReview;
+            for (Review review : reviewsCollection.getResults()) {
+                txtReview = new TextView(getActivity());
+                txtReview.setText(review.getAuthor() + ": " + review.getContent());
+                mContainerReviews.addView(txtReview);
+            }
+        } else {
+            TextView txtView = new TextView(getActivity());
+            txtView.setText("No movie trailers available, try later!");
+            mContainerReviews.addView(txtView);
+        }
+    }
 
 
     // ===========================================================
@@ -257,11 +272,11 @@ public class DetailFragment extends Fragment
      */
     private void watchYoutubeVideo(String id){
         try{
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(INTENT_YOUTUBE + id));
             startActivity(intent);
         }catch (ActivityNotFoundException ex){
             Intent intent=new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("http://www.youtube.com/watch?v="+id));
+                    Uri.parse(BASE_YOUTUBE_URL+id));
             startActivity(intent);
         }
     }
@@ -270,7 +285,5 @@ public class DetailFragment extends Fragment
     // Inner and Anonymous Classes
     // ===========================================================
 
-    public interface FragmentSupportActionBar {
-        void configureSupportActionBar(Toolbar toolbar);
-    }
+
 }

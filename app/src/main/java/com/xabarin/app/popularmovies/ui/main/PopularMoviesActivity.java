@@ -4,16 +4,21 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.xabarin.app.popularmovies.R;
+import com.xabarin.app.popularmovies.model.SortBy;
 import com.xabarin.app.popularmovies.preferences.GeneralPreferences;
 import com.xabarin.app.popularmovies.preferences.GeneralPreferencesActivity;
+import com.xabarin.app.popularmovies.ui.FragmentSupportActionBar;
 import com.xabarin.app.popularmovies.ui.detail.DetailActivity;
+import com.xabarin.app.popularmovies.ui.detail.DetailFragment;
 
 
-public class PopularMoviesActivity extends AppCompatActivity implements PopularMoviesFragment.Callback {
+public class PopularMoviesActivity extends AppCompatActivity
+        implements FragmentSupportActionBar, PopularMoviesFragment.Callback {
 
     // Ordering code based on github contributor https://github.com/sockeqwe
     // ===========================================================
@@ -22,14 +27,20 @@ public class PopularMoviesActivity extends AppCompatActivity implements PopularM
 
     private static final String LOG_TAG = PopularMoviesActivity.class.getSimpleName();
 
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+
+
     // ===========================================================
     // Fields
     // ===========================================================
 
+    private boolean mTwoPane;
     /**
      * Set the 3 sort options: by most popular, by highest-rated or favourite
      */
-    private String mSortOption;
+    private SortBy mSortOption;
+
+    private GeneralPreferences mGeneralPreferences;
 
     // ===========================================================
     // Constructors
@@ -48,40 +59,34 @@ public class PopularMoviesActivity extends AppCompatActivity implements PopularM
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_container);
 
-//        if (savedInstanceState == null) {
-//            // Create the detail fragment and add it to the activity
-//            // using a fragment transaction.
-//
-//            Bundle arguments = new Bundle();
-//            arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
-//
-//            DetailFragment fragment = new DetailFragment();
-//            fragment.setArguments(arguments);
-//
-//            getFragmentManager().beginTransaction()
-//                    .add(R.id.activity_fragment_container, fragment)
-//                    .commit();
-//        }
-//        PopularMoviesFragment popularMoviesFragment = (PopularMoviesFragment)getFragmentManager()
-//                .findFragmentById(R.id.activity_fragment_container);
+        mGeneralPreferences = new GeneralPreferences(getApplicationContext());
+        mSortOption = mGeneralPreferences.getSortByEnumPreference();
+
+        if (findViewById(R.id.fragment_movies_detail_container) != null) {
+            // The detail container view will be present only in the large-screen layouts
+            // (res/layout-sw600dp). If this view is present, then the activity should be
+            // in two-pane mode.
+            mTwoPane = true;
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_movies_detail_container, new DetailFragment(), DETAILFRAGMENT_TAG)
+                        .commit();
+            }
+        } else {
+            mTwoPane = false;
+            getSupportActionBar().setElevation(0f);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        GeneralPreferences preferences = new GeneralPreferences(getApplicationContext());
-        //String sortOption = GeneralPreferences.mapSortByToString(preferences.getSortByEnumPreference());
+        // GeneralPreferences preferences = new GeneralPreferences(getApplicationContext());
 
-        // update the location in our second pane using the fragment manager
-//        if (sortOption != null && !sortOption.equals(mSortOption)) {
-//            PopularMoviesFragment pmf = (PopularMoviesFragment) getFragmentManager().findFragmentById(R.id.activity_fragment_container);
-//            if (null != pmf) {
-//                pmf.onSortByChanged();
-//            }
-//        }
-
-        mSortOption = GeneralPreferences.mapSortByToString(preferences.getSortByEnumPreference());
     }
 
     @Override
@@ -114,8 +119,35 @@ public class PopularMoviesActivity extends AppCompatActivity implements PopularM
 
     @Override
     public void onItemSelected(Uri uri) {
-        Intent intent = new Intent(this, DetailActivity.class).setData(uri);
-        startActivity(intent);
+
+        if (mTwoPane) {
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            Bundle args = new Bundle();
+            args.putParcelable(DetailFragment.DETAIL_URI, uri);
+
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_movies_detail_container, fragment, DETAILFRAGMENT_TAG)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, DetailActivity.class).setData(uri);
+            startActivity(intent);
+        }
+
+    }
+
+    @Override
+    public void configureSupportActionBar(Toolbar toolbar) {
+
+        if (!mTwoPane) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
     }
 
     // ===========================================================

@@ -27,5 +27,6 @@
     <string name="form_release_date">Release date</string>
     <string name="form_rate">Rate</string>
     <string name="form_trailers">Trailers</string>
+    <string name="form_reviews">Reviews</string>
 
 </resources>
