@@ -40,8 +40,14 @@ public class PopularMoviesProvider extends ContentProvider {
     /**
      * Represents the MOVIE._ID = ?
      */
-    private static final String sIDMovieSelection =
+    private static final String sMovieSelectionByID =
         MovieEntry.TABLE_NAME + "." + MovieEntry._ID + " = ?";
+
+    /**
+     * Represents the FAV_MOVIE._ID = ?
+     */
+    private static final String sFavMovieSelectionByID =
+            FavMovieEntry.TABLE_NAME + "." + FavMovieEntry._ID + " = ?";
 
     // ===========================================================
     // Fields
@@ -105,6 +111,9 @@ public class PopularMoviesProvider extends ContentProvider {
                         selection,
                         selectionArgs,
                         null, null, sortOrder);
+                break;
+            case POPULAR_FAV_MOVIES_BY_ID :
+                myCursor = getFavMovieById(uri, projection, sortOrder);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -300,7 +309,7 @@ public class PopularMoviesProvider extends ContentProvider {
     }
 
     private Cursor getMovieById(Uri uri, String[] projection, String sortOrder) {
-        Long lngMovieID = PopularMoviesContract.MovieEntry.getIdFromUri(uri);
+        Long lngMovieID = MovieEntry.getIdFromUri(uri);
 
         String selection;
         String[] selectionArgs;
@@ -308,12 +317,33 @@ public class PopularMoviesProvider extends ContentProvider {
             selection = null;
             selectionArgs = null;
         } else {
-            selection = sIDMovieSelection;
+            selection = sMovieSelectionByID;
             selectionArgs = new String[]{ lngMovieID.toString() };
         }
 
         return mMoviesDBHelper.getReadableDatabase().query(
                 MovieEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null, null, sortOrder);
+    }
+
+    private Cursor getFavMovieById(Uri uri, String[] projection, String sortOrder) {
+        Long lngMovieID = FavMovieEntry.getIdFromUri(uri);
+
+        String selection;
+        String[] selectionArgs;
+        if (lngMovieID == 0) {
+            selection = null;
+            selectionArgs = null;
+        } else {
+            selection = sFavMovieSelectionByID;
+            selectionArgs = new String[]{ lngMovieID.toString() };
+        }
+
+        return mMoviesDBHelper.getReadableDatabase().query(
+                FavMovieEntry.TABLE_NAME,
                 projection,
                 selection,
                 selectionArgs,

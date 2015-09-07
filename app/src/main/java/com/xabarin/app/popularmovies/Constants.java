@@ -15,6 +15,7 @@ public final class Constants {
      */
     public static final String BUNDLE_KEY_ROOT = "com.xabarin.app.popularmovies";
 
+    public static final String BASE_URL = "http://api.themoviedb.org";
     // ===========================================================
     // Fields
     // ===========================================================

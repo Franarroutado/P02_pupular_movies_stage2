@@ -3,6 +3,7 @@ package com.xabarin.app.popularmovies.ui.main;
 import android.content.ContentValues;
 import android.util.Log;
 
+import com.xabarin.app.popularmovies.Constants;
 import com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
 import com.xabarin.app.popularmovies.data.PopularMoviesDB;
 import com.xabarin.app.popularmovies.model.MoviesAPI;
@@ -28,7 +29,6 @@ public class PopularMoviesPresenter {
     // Final Fields
     // ===========================================================
 
-    private static final String BASE_URL = "http://api.themoviedb.org";
     private static final String LOG_TAG = PopularMoviesPresenter.class.getSimpleName();
 
     // ===========================================================
@@ -60,7 +60,7 @@ public class PopularMoviesPresenter {
 
     public void requestMovies(SortBy sortBy, String codeApi) {
 
-        RestAdapter myRestAdapter = new RestAdapter.Builder().setEndpoint(BASE_URL).build();
+        RestAdapter myRestAdapter = new RestAdapter.Builder().setEndpoint(Constants.BASE_URL).build();
         MoviesAPI myMoviesAPI = myRestAdapter.create(MoviesAPI.class);
         String sortByOption  = GeneralPreferences.mapSortByToString(sortBy);
 

@@ -26,5 +26,6 @@
     <string name="form_synopsis">Synopsis</string>
     <string name="form_release_date">Release date</string>
     <string name="form_rate">Rate</string>
+    <string name="form_trailers">Trailers</string>
 
 </resources>

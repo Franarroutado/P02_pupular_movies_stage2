@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.github.clans.fab.FloatingActionButton;
 import com.xabarin.app.popularmovies.R;
 import com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
+import com.xabarin.app.popularmovies.data.PopularMoviesContract.FavMovieEntry;
 import com.xabarin.app.popularmovies.model.SortBy;
 import com.xabarin.app.popularmovies.model.movies.Movie;
 import com.xabarin.app.popularmovies.model.movies.MoviesCollection;
@@ -47,7 +48,8 @@ public class PopularMoviesFragment extends Fragment
 
     private static final String SAVED_INSTANCE_KEY = "movies"; // To save the data when rotation the device
 
-    private static final int POPULARMOVIES_LOADER = 0;
+    private static final int MOVIES_LOADER = 0;
+    private static final int FAV_MOVIES_LOADER = 1;
 
 
     // ===========================================================
@@ -96,8 +98,6 @@ public class PopularMoviesFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Add this line in order for this fragment to handle menu
-        //setHasOptionsMenu(true);
     }
 
     @Override
@@ -120,7 +120,12 @@ public class PopularMoviesFragment extends Fragment
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (cursor != null) {
                     Long lngIdMovie = cursor.getLong(MovieEntry.CURSOR_COLUMN_INDEX_FOR_ID);
-                    ((Callback) getActivity()).onItemSelected(MovieEntry.buildMoviesUri(lngIdMovie));
+                    SortBy sortBy = mPreferences.getSortByEnumPreference();
+                    if (sortBy.equals(SortBy.FAVORITES)) {
+                        ((Callback) getActivity()).onItemSelected(FavMovieEntry.buildMoviesUri(lngIdMovie));
+                    } else {
+                        ((Callback) getActivity()).onItemSelected(MovieEntry.buildMoviesUri(lngIdMovie));
+                    }
                 }
             }
         });
@@ -129,14 +134,15 @@ public class PopularMoviesFragment extends Fragment
         mFabHighestRated.setOnClickListener(fabClickListener);
         mFabMostPopular.setOnClickListener(fabClickListener);
 
-       // mFabFavorite.setOnClickListener(fabClickListener);
-
         return rootView;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(POPULARMOVIES_LOADER, null, this);
+        SortBy sortBy = mPreferences.getSortByEnumPreference();
+        int intLoaderId = MOVIES_LOADER; // value by default
+        if (sortBy.equals(SortBy.FAVORITES)) intLoaderId = FAV_MOVIES_LOADER; // if favorite change the loader
+        getLoaderManager().initLoader(intLoaderId, null, this); // initilize the loader
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -162,14 +168,21 @@ public class PopularMoviesFragment extends Fragment
     /** THE FOLLOWING ARE THE OVERRIDE METHODS FOR  LoaderManager.LoaderCallbacks **/
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-        Uri popularMovieUri =  MovieEntry.CONTENT_URI;
-
-        return new CursorLoader(getActivity(),
-                popularMovieUri,
-                MovieEntry.MOVIES_COLUMNS,
-                null, null, null);
+    public Loader<Cursor> onCreateLoader(int idLoader, Bundle args) {
+        switch (idLoader) {
+            case MOVIES_LOADER :
+                return new CursorLoader(getActivity(),
+                        MovieEntry.CONTENT_URI,
+                        MovieEntry.MOVIES_COLUMNS,
+                        null, null, null);
+            case FAV_MOVIES_LOADER :
+                return new CursorLoader(getActivity(),
+                        FavMovieEntry.CONTENT_URI,
+                        FavMovieEntry.MOVIES_COLUMNS,
+                        null, null, null);
+        }
+        // TODO improve this response
+        return null;
     }
 
     @Override
@@ -186,17 +199,29 @@ public class PopularMoviesFragment extends Fragment
     // Methods
     // ===========================================================
 
-    public void onSortByChanged() {
+    private void onSortByChanged() {
 
         String apiKey = getPreferenceAPIKey();
         SortBy sortBy = mPreferences.getSortByEnumPreference();
-
-        mPresenter.requestMovies(sortBy, apiKey);
-        getLoaderManager().restartLoader(POPULARMOVIES_LOADER, null, this);
+        if (!sortBy.equals(SortBy.FAVORITES)) { // fetch the data internet for any sort except FAVORITE
+            mPresenter.requestMovies(sortBy, apiKey);
+        }
+        restartLoader();
     }
 
-    public static PopularMoviesFragment makePopularMoviesFragment() {
-        return new PopularMoviesFragment();
+    /**
+     * Restart the loader based on type of sort: favorite, popularity and high ranked
+     */
+    private void restartLoader() {
+
+        SortBy sortBy = mPreferences.getSortByEnumPreference();
+        int intLoaderId;
+        if (sortBy.equals(SortBy.FAVORITES)){
+            intLoaderId = FAV_MOVIES_LOADER;
+        } else {
+            intLoaderId = MOVIES_LOADER;
+        }
+        getLoaderManager().restartLoader(intLoaderId, null, this);
     }
 
     private String getPreferenceAPIKey() {
@@ -236,6 +261,8 @@ public class PopularMoviesFragment extends Fragment
 
             // Only reload movies if the option selected is different of the current.
             if (null != sortBySelected && !sortBySelected.equals(sortByDefault)) {
+                Log.v(LOG_TAG, sortBySelected.toString());
+                Log.v(LOG_TAG, sortByDefault.toString());
                 mPreferences.setSortByPreference(sortBySelected);
                 onSortByChanged();
             }

@@ -1,9 +1,12 @@
 package com.xabarin.app.popularmovies.model;
 
 import com.xabarin.app.popularmovies.model.movies.MoviesCollection;
+import com.xabarin.app.popularmovies.model.reviews.ReviewsCollection;
+import com.xabarin.app.popularmovies.model.videos.VideosCollection;
 
 import retrofit.Callback;
 import retrofit.http.GET;
+import retrofit.http.Path;
 import retrofit.http.Query;
 
 /**
@@ -36,14 +39,14 @@ public interface MoviesAPI {
     // Methods
     // ===========================================================
 
-//        @GET("/3/discover/movie?sort_by=popularity.desc&api_key=fb26558156aac88aaa33978aab72662f")
-//        public void getMoviesByPopularity(Callback<MoviesCollection> response);
-//
-//        @GET("/3/discover/movie?sort_by=vote_average.desc&api_key=fb26558156aac88aaa33978aab72662f")
-//        public void getMoviesByHighestRated(Callback<MoviesCollection> response);
-
         @GET("/3/discover/movie")
-        public void getMovies(@Query("sort_by") String sortBy, @Query("api_key") String ApiKey, Callback<MoviesCollection> response);
+        void getMovies(@Query("sort_by") String sortBy, @Query("api_key") String ApiKey, Callback<MoviesCollection> response);
+
+        @GET("/3/movie/{id}/videos")
+        void getVideos(@Path("id") String movieId, @Query("api_key") String ApiKey, Callback<VideosCollection> response);
+
+        @GET("/3/movie/{id}/reviews")
+        void getReviews(@Path("id") String movieId, @Query("api_key") String ApiKey, Callback<ReviewsCollection> response);
 
     // ===========================================================
     // Inner and Anonymous Classes

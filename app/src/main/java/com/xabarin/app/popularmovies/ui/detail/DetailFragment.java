@@ -3,24 +3,33 @@ package com.xabarin.app.popularmovies.ui.detail;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.xabarin.app.popularmovies.R;
-import com.xabarin.app.popularmovies.data.PopularMoviesContract;
 import com.xabarin.app.popularmovies.data.PopularMoviesContract.FavMovieEntry;
 import com.xabarin.app.popularmovies.data.PopularMoviesContract.MovieEntry;
+import com.xabarin.app.popularmovies.model.reviews.ReviewsCollection;
+import com.xabarin.app.popularmovies.model.videos.Video;
+import com.xabarin.app.popularmovies.model.videos.VideosCollection;
 import com.xabarin.app.popularmovies.ui.Toaster;
 
 import butterknife.Bind;
@@ -63,6 +72,9 @@ public class DetailFragment extends Fragment
     @Bind(R.id.toolbar)             Toolbar mToolBar;
     @Bind(R.id.fabFavorite)         android.support.design.widget.FloatingActionButton mFabFavorite;
 
+    @Bind(R.id.container_videos)    LinearLayout mContainerVideos;
+
+
     // ===========================================================
     // Constructors
     // ===========================================================
@@ -102,6 +114,14 @@ public class DetailFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+
+
+        String idMovie = mUri.getLastPathSegment();
+        String apiKey = getPreferenceAPIKey();
+        mPresenter.requestReviews(idMovie, apiKey);
+        mPresenter.requestVideos(idMovie, apiKey);
+
+
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -112,11 +132,10 @@ public class DetailFragment extends Fragment
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (null != mUri) {
-
             return new CursorLoader(
                     getActivity(),
                     mUri,
-                    PopularMoviesContract.MovieEntry.MOVIES_COLUMNS,
+                    MovieEntry.MOVIES_COLUMNS,
                     null, null, null
             );
         }
@@ -135,10 +154,10 @@ public class DetailFragment extends Fragment
             mContentValues.put(FavMovieEntry.COLUMN_VOTE_AVERAGE,   data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_VOTE_AVERAGE));
             mContentValues.put(FavMovieEntry.COLUMN_POSTER_URL, data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_POSTER_URL));
 
-            mcollapsingToolbar.setTitle(data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_TITLE));
-            mtxtViewPlotSynopsis.setText(data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_OVERVIEW));
+            mcollapsingToolbar.setTitle(    data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_TITLE));
+            mtxtViewPlotSynopsis.setText(   data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_OVERVIEW));
             mtxtViewReleaseDate.setText(    data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_RELEASE_DATE));
-            mtxtViewUserRating.setText(data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_VOTE_AVERAGE));
+            mtxtViewUserRating.setText(     data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_VOTE_AVERAGE));
             Picasso.with(getActivity().getApplicationContext())
                     .load(BASE_IMAGE_URL + data.getString(MovieEntry.CURSOR_COLUMN_INDEX_FOR_POSTER_URL))
                     .into(mImgViewPoster);
@@ -159,18 +178,48 @@ public class DetailFragment extends Fragment
         return this.getActivity();
     }
 
-// ===========================================================
+    @Override
+    public void onRequestVideosSuccess(VideosCollection videosCollection) {
+
+        if(videosCollection != null && videosCollection.getResults().size() > 0) {
+            ImageButton imgButton;
+            for (Video video : videosCollection.getResults()) {
+                imgButton = new ImageButton(getActivity());
+                imgButton.setTag(video);
+                imgButton.setImageResource(R.drawable.trailer);
+                imgButton.setOnClickListener(videoButtonClickListener);
+                mContainerVideos.addView(imgButton);
+            }
+        } else {
+            TextView txtView = new TextView(getActivity());
+            txtView.setText("No movie trailers available, try later!");
+            mContainerVideos.addView(txtView);
+        }
+
+    }
+
+    @Override
+    public void onRequestReviewsSuccess(ReviewsCollection reviewsCollection) {
+        Log.v(LOG_TAG, reviewsCollection.toString());
+    }
+
+
+
+    // ===========================================================
     // Methods
     // ===========================================================
 
-    public static DetailFragment makePopularMoviesDetailFragment() {
-        return new DetailFragment();
-    }
+    private ImageButton.OnClickListener videoButtonClickListener = new ImageButton.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Video video = (Video)v.getTag();
+            watchYoutubeVideo(video.getKey());
+        }
+    };
 
     private View.OnClickListener fabClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
 
             Boolean blnResult = false;
             if (null != mContentValues) {
@@ -183,9 +232,6 @@ public class DetailFragment extends Fragment
             } else {
                 Toaster.makeAtoast(getActivity().getApplicationContext(), "Favourite deleted from your list!").show();
             }
-
-
-
         }
     };
 
@@ -195,6 +241,28 @@ public class DetailFragment extends Fragment
             mFabFavorite.setImageResource(R.drawable.ic_star_black);
         } else {
             mFabFavorite.setImageResource(R.drawable.ic_star_border_white);
+        }
+    }
+
+    private String getPreferenceAPIKey() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return preferences.getString(getString(R.string.pref_apikey_key),
+                getString(R.string.pref_apikey_default));
+
+    }
+
+    /**
+     * http://stackoverflow.com/questions/574195/android-youtube-app-play-video-intent
+     * @param id
+     */
+    private void watchYoutubeVideo(String id){
+        try{
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
+            startActivity(intent);
+        }catch (ActivityNotFoundException ex){
+            Intent intent=new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://www.youtube.com/watch?v="+id));
+            startActivity(intent);
         }
     }
 
