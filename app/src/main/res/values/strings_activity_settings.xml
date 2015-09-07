@@ -9,7 +9,7 @@
     <!-- themoviedb.org API Key -->
     <string name="pref_apikey_label">API Key</string>
     <string name="pref_apikey_key" translatable="false">pref_apikey_key</string>
-    <string name="pref_apikey_default" translatable="false">fb26558156aac88aaa33978aab72662f</string>
+    <string name="pref_apikey_default" translatable="false">xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</string>
 
 
     <!-- ReviewsCollection GeneralPreferencesActivity settings -->
